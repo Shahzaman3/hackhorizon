@@ -2,25 +2,25 @@ export default function StatusBadge({ status }) {
   const normalizedStatus = status?.toLowerCase() || 'pending';
 
   const styles = {
-    pending:  'bg-[#eab308]/10 text-[#eab308] border-[#eab308]/20',
-    accepted: 'bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/20',
-    rejected: 'bg-[#f87171]/10 text-[#f87171] border-[#f87171]/20',
-    modified: 'bg-[#60a5fa]/10 text-[#60a5fa] border-[#60a5fa]/20',
+    pending:  'bg-amber-50 text-amber-700 border-amber-100',
+    accepted: 'bg-[#047857]/5 text-[#047857] border-[#047857]/10',
+    rejected: 'bg-red-50 text-red-600 border-red-100',
+    modified: 'bg-blue-50 text-blue-600 border-blue-100',
   };
 
   const dots = {
-    pending:  '#eab308',
-    accepted: '#4ade80',
-    rejected: '#f87171',
-    modified: '#60a5fa',
+    pending:  '#b45309',
+    accepted: '#047857',
+    rejected: '#dc2626',
+    modified: '#2563eb',
   };
 
   const badgeClass = styles[normalizedStatus] || styles.pending;
   const dotColor   = dots[normalizedStatus]   || dots.pending;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 text-[10px] px-2.5 py-1 rounded-full font-bold border capitalize tracking-wider ${badgeClass}`}>
-      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+    <span className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.12em] px-3 py-1.5 rounded-full border shadow-sm transition-all duration-300 ${badgeClass}`}>
+      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 animate-pulse" style={{ backgroundColor: dotColor }} />
       {status || 'Pending'}
     </span>
   );

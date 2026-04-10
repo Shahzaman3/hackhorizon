@@ -1,16 +1,3 @@
-import axios from "axios";
+import api from '../src/api/axios';
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", // your backend
-});
-
-// optional: attach token automatically
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
-
-export default API;
+export default api;

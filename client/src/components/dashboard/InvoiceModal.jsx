@@ -62,122 +62,122 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
 
   const getStatusColor = (status) => {
     const s = status?.toLowerCase();
-    if (s === 'accepted') return '#4ade80';
-    if (s === 'rejected') return '#f87171';
-    if (s === 'modified') return '#60a5fa';
-    return '#eab308';
+    if (s === 'accepted') return '#047857';
+    if (s === 'rejected') return '#dc2626';
+    if (s === 'modified') return '#2563eb';
+    return '#ca8a04';
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-[#111a15] border border-[#243124] rounded-2xl w-full max-w-lg flex flex-col max-h-[90vh] shadow-2xl animate-scale-in overflow-hidden">
+    <div className="fixed inset-0 bg-[#0A2518]/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+      <div className="bg-white border border-[#E5E2D9] rounded-[2.5rem] w-full max-w-xl flex flex-col max-h-[90vh] shadow-2xl animate-scale-in overflow-hidden">
 
         {/* Header */}
-        <div className="flex justify-between items-start p-6 border-b border-[#243124] flex-shrink-0">
-          <div>
-            <span className="font-mono font-bold text-lg text-[#4ade80] tracking-wide">{invoice.invoiceNumber}</span>
-            <div className="text-[11px] text-[#3d5945] mt-1 uppercase tracking-wider font-semibold">
-              {new Date(invoice.date || invoice.createdAt).toLocaleDateString('en-GB')}
+        <div className="flex justify-between items-start p-8 border-b border-[#E5E2D9] flex-shrink-0 bg-[#F4F1EA]/10">
+          <div className="flex flex-col gap-1.5">
+            <span className="font-black text-2xl text-[#0A2518] tracking-tighter" style={{ fontFamily: 'Plus Jakarta Sans' }}>{invoice.invoiceNumber}</span>
+            <div className="text-[10px] text-[#728279] uppercase tracking-[0.2em] font-black">
+               Issued on {new Date(invoice.date || invoice.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <BlockchainBadge status={invoice.blockchainStatus} />
             <StatusBadge status={invoice.status} />
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-xl bg-[#192319] border border-[#243124] flex items-center justify-center text-[#6b8f76] hover:text-white hover:bg-[#2e4030] transition-all"
+              className="w-10 h-10 rounded-xl bg-white border border-[#E5E2D9] flex items-center justify-center text-[#728279] hover:text-[#047857] hover:border-[#047857]/30 transition-all shadow-sm"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
         </div>
 
-        {/* Scrollable body */}
+        {/* Body */}
         <div className="overflow-y-auto custom-scrollbar flex-1">
-          <div className="p-6">
+          <div className="p-8 space-y-10">
 
-            {/* GSTINs */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* Stakeholders */}
+            <div className="grid grid-cols-2 gap-6">
               {[
-                { label: 'Seller GSTIN', value: invoice.sellerGstin },
-                { label: 'Buyer GSTIN',  value: invoice.buyerGstin },
-              ].map(({ label, value }) => (
-                <div key={label} className="bg-[#0f1812] border border-[#243124] rounded-xl p-4">
-                  <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#3d5945] mb-1.5">{label}</div>
-                  <div className="text-sm font-mono font-semibold text-white truncate">{value}</div>
+                { label: 'Merchant / Seller', value: invoice.sellerGstin, icon: 'M' },
+                { label: 'Purchaser / Buyer',  value: invoice.buyerGstin, icon: 'P' },
+              ].map(({ label, value, icon }) => (
+                <div key={label} className="bg-[#F4F1EA]/20 border border-[#E5E2D9] rounded-3xl p-5 relative group overflow-hidden">
+                  <div className="absolute -right-2 -bottom-2 text-6xl font-black text-[#047857]/5 group-hover:scale-110 transition-transform">{icon}</div>
+                  <div className="text-[9px] uppercase tracking-[0.18em] font-black text-[#728279] mb-2">{label}</div>
+                  <div className="text-sm font-mono font-black text-[#0A2518] uppercase tracking-wider relative z-10">{value}</div>
                 </div>
               ))}
             </div>
 
-            {/* Amount Block */}
-            <div className="bg-[#0f1812] border border-[#243124] rounded-xl p-5 mb-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#3d5945] mb-2">Total Amount</div>
-                  <div className="text-3xl font-extrabold text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                    ₹{invoice.amount?.toLocaleString('en-IN')}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#3d5945] mb-2">Tax Breakdown</div>
-                  <div className="text-xl font-bold text-white mb-1">₹{totalTax.toLocaleString('en-IN')}</div>
-                  <div className="text-[11px] text-[#3d5945] font-medium">
-                    CGST ₹{invoice.tax?.cgst || 0} · SGST ₹{invoice.tax?.sgst || 0} · IGST ₹{invoice.tax?.igst || 0}
-                  </div>
-                </div>
-              </div>
+            {/* Financial Summary */}
+            <div className="bg-[#0A2518] rounded-[2rem] p-8 text-[#FDFBF7] shadow-xl shadow-[#0A2518]/20 relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-12 -translate-y-12 blur-3xl" />
+               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                 <div className="space-y-2">
+                   <div className="text-[10px] uppercase tracking-[0.2em] font-black text-white/50">Settlement Amount</div>
+                   <div className="text-4xl font-black tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+                     ₹{invoice.amount?.toLocaleString('en-IN')}
+                   </div>
+                   <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/10">
+                      <span className={`w-1.5 h-1.5 rounded-full ${invoice.paymentStatus === 'paid' ? 'bg-[#4ade80]' : 'bg-red-400 animate-pulse'}`} />
+                      {invoice.paymentStatus || 'unpaid'}
+                   </div>
+                 </div>
+                 
+                 <div className="flex flex-col justify-center border-l border-white/10 pl-10">
+                    <div className="text-[10px] uppercase tracking-[0.2em] font-black text-white/50 mb-4">Statutory Tax Components</div>
+                    <div className="space-y-3">
+                       {[
+                         { l: 'Central Tax (CGST)', v: invoice.tax?.cgst || 0 },
+                         { l: 'State Tax (SGST)', v: invoice.tax?.sgst || 0 },
+                         { l: 'Integrated (IGST)', v: invoice.tax?.igst || 0 },
+                       ].map(({l, v}) => (
+                         <div key={l} className="flex justify-between items-center text-[10px] font-bold">
+                            <span className="text-white/40">{l}</span>
+                            <span>₹{v.toLocaleString()}</span>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+               </div>
             </div>
 
-            {/* Meta */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-[#0f1812] border border-[#243124] rounded-xl p-4">
-                <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#3d5945] mb-2">Payment Status</div>
-                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border inline-block ${
-                  invoice.paymentStatus === 'paid'
-                    ? 'bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/20'
-                    : 'bg-[#f87171]/10 text-[#f87171] border-[#f87171]/20'
-                }`}>
-                  {invoice.paymentStatus || 'unpaid'}
-                </span>
-              </div>
-              <div className="bg-[#0f1812] border border-[#243124] rounded-xl p-4">
-                <div className="text-[10px] uppercase tracking-[0.14em] font-bold text-[#3d5945] mb-2">Record Date</div>
-                <div className="text-sm font-semibold text-white">
-                  {new Date(invoice.createdAt || invoice.date).toLocaleDateString('en-GB')}
-                </div>
-              </div>
-            </div>
-
-            {/* Status History */}
-            <div>
-              <h4 className="text-[10px] font-bold text-[#3d5945] uppercase tracking-[0.14em] mb-4">Status History</h4>
-              <div className="flex flex-col gap-4">
+            {/* Compliance History */}
+            <div className="bg-white border border-[#E5E2D9] rounded-[2rem] p-8 space-y-6 shadow-sm">
+              <h4 className="text-[10px] font-black text-[#728279] uppercase tracking-[0.25em] flex items-center gap-3">
+                 <span className="w-6 h-px bg-[#E5E2D9]" />
+                 Lifecycle Audit Trail
+              </h4>
+              <div className="space-y-8">
                 {invoice.history && invoice.history.length > 0 ? (
                   invoice.history.map((h, i) => (
-                    <div key={i} className="flex items-start gap-3">
+                    <div key={i} className="flex items-start gap-5 group animate-fade-in">
                       <div className="relative flex-shrink-0 mt-1">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getStatusColor(h.status) }} />
+                        <div className="w-5 h-5 rounded-lg border-2 border-white shadow-md z-10 relative" style={{ backgroundColor: getStatusColor(h.status) }} />
                         {i < invoice.history.length - 1 && (
-                          <div className="absolute top-3 left-[4.5px] w-px h-6 bg-[#243124]" />
+                          <div className="absolute top-5 left-[9px] w-0.5 h-10 bg-[#E5E2D9]" />
                         )}
                       </div>
-                      <div className="flex flex-col flex-1 pb-2">
-                        <span className="text-sm font-bold text-white capitalize">{h.status}</span>
-                        {h.note && <span className="text-xs text-[#6b8f76] mt-0.5 italic">"{h.note}"</span>}
+                      <div className="flex flex-col flex-1 pb-4">
+                        <div className="flex items-center justify-between mb-1">
+                           <span className="text-sm font-black text-[#0A2518] capitalize leading-none">{h.status} event</span>
+                           <span className="text-[10px] text-[#A2A9A5] font-black uppercase tracking-widest">
+                              {new Date(h.date).toLocaleDateString('en-GB', { day:'2-digit', month: 'short' })}
+                           </span>
+                        </div>
+                        {h.note && <span className="text-[11px] text-[#728279] mt-1 font-medium bg-[#F4F1EA]/50 p-2 rounded-lg border border-[#E5E2D9]/40 italic">"{h.note}"</span>}
                       </div>
-                      <span className="text-[10px] text-[#3d5945] font-semibold uppercase tracking-wider flex-shrink-0">
-                        {new Date(h.date).toLocaleDateString('en-GB')}
-                      </span>
                     </div>
                   ))
                 ) : (
-                  <div className="flex items-start gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0" style={{ backgroundColor: getStatusColor(invoice.status) }} />
+                  <div className="flex items-start gap-4">
+                    <div className="w-4 h-4 rounded-full mt-1 flex-shrink-0 bg-[#ca8a04] shadow-sm shadow-[#ca8a04]/20" />
                     <div>
-                      <span className="text-sm font-bold text-white capitalize">{invoice.status}</span>
-                      <p className="text-xs text-[#3d5945] mt-0.5">Invoice initially created</p>
+                      <span className="text-sm font-black text-[#0A2518] capitalize">{invoice.status}</span>
+                      <p className="text-[11px] text-[#728279] mt-1 font-medium italic">Record initialized on the network.</p>
                     </div>
                   </div>
                 )}
@@ -186,63 +186,62 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-6 border-t border-[#243124] flex-shrink-0">
+        {/* Footer */}
+        <div className="p-8 border-t border-[#E5E2D9] flex-shrink-0 bg-[#F4F1EA]/10">
           {role === 'seller' && invoice.paymentStatus !== 'paid' && (
             <button
               onClick={markAsPaid}
               disabled={loading}
-              className="w-full bg-[#4ade80] hover:bg-[#86efac] text-[#0a0f0d] rounded-xl py-3.5 text-sm font-bold transition-all disabled:opacity-50 shadow-lg shadow-[#4ade80]/20 hover:shadow-[#4ade80]/35"
+              className="w-full bg-[#047857] hover:bg-[#065F46] text-white rounded-2xl py-5 text-sm font-black uppercase tracking-widest transition-all disabled:opacity-50 shadow-xl shadow-[#047857]/20 flex items-center justify-center gap-3"
               style={{ fontFamily: 'Plus Jakarta Sans' }}
             >
-              {loading ? 'Processing...' : 'Mark as Paid'}
+              {loading && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin" />}
+              {loading ? 'Finalizing...' : 'Certify Final Settlement'}
             </button>
           )}
 
           {role === 'buyer' && invoice.status?.toLowerCase() === 'pending' && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               {!inlineAction ? (
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {[
-                    { type: 'accepted', label: 'Accept',  cls: 'bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/20 hover:bg-[#4ade80]/20' },
-                    { type: 'rejected', label: 'Reject',  cls: 'bg-[#f87171]/10 text-[#f87171] border-[#f87171]/20 hover:bg-[#f87171]/20' },
-                    { type: 'modified', label: 'Modify',  cls: 'bg-[#60a5fa]/10 text-[#60a5fa] border-[#60a5fa]/20 hover:bg-[#60a5fa]/20' },
+                    { type: 'accepted', label: 'Approve',  cls: 'bg-[#047857] text-white shadow-[#047857]/20' },
+                    { type: 'rejected', label: 'Dispute',   cls: 'bg-white text-[#dc2626] border-[#dc2626]/20' },
+                    { type: 'modified', label: 'Request Revision',  cls: 'bg-[#F4F1EA] text-[#4D6357]' },
                   ].map(({ type, label, cls }) => (
                     <button
                       key={type}
                       onClick={() => handleAction(type)}
                       disabled={loading}
-                      className={`flex-1 border rounded-xl py-3 text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 ${cls}`}
+                      className={`h-14 flex items-center justify-center border rounded-2xl text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-300 disabled:opacity-50 shadow-lg ${cls}`}
                     >
                       {label}
                     </button>
                   ))}
                 </div>
               ) : (
-                <div className="bg-[#0f1812] border border-[#243124] rounded-xl p-4 flex flex-col gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#6b8f76]">
-                    {inlineAction === 'rejected' ? 'Rejection Reason' : 'Modification Details'}
-                  </span>
+                <div className="bg-white border border-[#E5E2D9] rounded-3xl p-6 flex flex-col gap-5 shadow-2xl animate-scale-in">
+                  <div className="flex items-center gap-3 text-[#dc2626]">
+                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">Formal Feedback Required</span>
+                  </div>
                   <textarea
                     value={actionNote}
                     onChange={(e) => setActionNote(e.target.value)}
-                    placeholder={inlineAction === 'rejected' ? 'Why are you rejecting this invoice?' : 'What needs to be changed?'}
-                    className="text-sm bg-[#192319] border border-[#243124] rounded-lg px-3 py-2.5 w-full resize-none outline-none focus:border-[#4ade80]/40 text-white placeholder-[#3d5945] transition-colors"
-                    rows={2}
+                    placeholder={inlineAction === 'rejected' ? 'Explain the specific inaccuracies...' : 'List the items requiring correction...'}
+                    className="text-sm bg-[#F4F1EA]/30 border border-[#E5E2D9] rounded-2xl px-5 py-4 w-full h-32 resize-none outline-none focus:border-[#047857] text-[#0A2518] placeholder-[#A2A9A5] font-bold transition-all shadow-inner"
                     autoFocus
                   />
-                  <div className="flex gap-2 justify-end">
-                    <button onClick={() => setInlineAction(null)} className="text-xs font-bold text-[#3d5945] hover:text-[#6b8f76] px-3 py-2 transition-colors">
+                  <div className="flex gap-4">
+                    <button onClick={() => setInlineAction(null)} className="flex-1 h-14 text-[10px] font-black uppercase tracking-widest text-[#728279] hover:bg-[#F4F1EA] rounded-2xl transition-all">
                       Cancel
                     </button>
                     <button
                       onClick={submitAction}
                       disabled={loading}
-                      className={`text-xs font-bold text-white px-5 py-2 rounded-lg shadow-sm disabled:opacity-50 transition-colors ${
-                        inlineAction === 'rejected' ? 'bg-[#f87171]/80 hover:bg-[#f87171]' : 'bg-[#60a5fa]/80 hover:bg-[#60a5fa]'
-                      }`}
+                      className="flex-2 h-14 bg-[#0A2518] text-white px-8 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#0A2518]/20 hover:bg-[#047857] transition-all"
                     >
-                      {loading ? 'Working...' : 'Confirm'}
+                      {loading ? 'Submitting...' : 'Confirm Submission'}
                     </button>
                   </div>
                 </div>
@@ -250,14 +249,6 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
             </div>
           )}
         </div>
-
-        <style>{`
-          @keyframes scaleIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-          }
-          .animate-scale-in { animation: scaleIn 0.25s cubic-bezier(.16,1,.3,1) forwards; }
-        `}</style>
       </div>
     </div>
   );

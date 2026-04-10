@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 exports.getSellerDashboard = async (req, res, next) => {
     try {
-        const sellerId = new mongoose.Types.ObjectId(req.user.userId);
+        const sellerId = new mongoose.Types.ObjectId(req.user.id);
 
         const [
             totalSent,
@@ -70,7 +70,10 @@ exports.getSellerDashboard = async (req, res, next) => {
 
 exports.getBuyerDashboard = async (req, res, next) => {
     try {
-        const buyerGstin = req.user.gstin;
+        const allowedGstins = [req.user.gstin];
+        if (req.user.businesses && req.user.businesses.length > 0) {
+            allowedGstins.push(...req.user.businesses.map(b => b.gstin));
+        }
 
         const [
             totalReceived,
@@ -82,14 +85,14 @@ exports.getBuyerDashboard = async (req, res, next) => {
             payableStats,
             paidStats
         ] = await Promise.all([
-            Invoice.countDocuments({ buyerGstin }),
-            Invoice.countDocuments({ buyerGstin, status: "accepted" }),
-            Invoice.countDocuments({ buyerGstin, status: "pending" }),
-            Invoice.countDocuments({ buyerGstin, status: "rejected" }),
-            Invoice.countDocuments({ buyerGstin, status: "modified" }),
+            Invoice.countDocuments({ buyerGstin: { $in: allowedGstins } }),
+            Invoice.countDocuments({ buyerGstin: { $in: allowedGstins }, status: "accepted" }),
+            Invoice.countDocuments({ buyerGstin: { $in: allowedGstins }, status: "pending" }),
+            Invoice.countDocuments({ buyerGstin: { $in: allowedGstins }, status: "rejected" }),
+            Invoice.countDocuments({ buyerGstin: { $in: allowedGstins }, status: "modified" }),
             // GST Payable
             Invoice.aggregate([
-                { $match: { buyerGstin, status: "accepted" } },
+                { $match: { buyerGstin: { $in: allowedGstins }, status: "accepted" } },
                 {
                     $group: {
                         _id: null,
@@ -101,12 +104,12 @@ exports.getBuyerDashboard = async (req, res, next) => {
             ]),
             // Total Amount Payable
             Invoice.aggregate([
-                { $match: { buyerGstin, paymentStatus: "unpaid" } },
+                { $match: { buyerGstin: { $in: allowedGstins }, paymentStatus: "unpaid" } },
                 { $group: { _id: null, total: { $sum: "$amount" } } }
             ]),
             // Total Amount Paid
             Invoice.aggregate([
-                { $match: { buyerGstin, paymentStatus: "paid" } },
+                { $match: { buyerGstin: { $in: allowedGstins }, paymentStatus: "paid" } },
                 { $group: { _id: null, total: { $sum: "$amount" } } }
             ])
         ]);
@@ -136,9 +139,13 @@ exports.getGstSummary = async (req, res, next) => {
     try {
         const matchQuery = { status: "accepted" };
         if (req.user.role === "seller") {
-            matchQuery.sellerId = new mongoose.Types.ObjectId(req.user.userId);
+            matchQuery.sellerId = new mongoose.Types.ObjectId(req.user.id);
         } else {
-            matchQuery.buyerGstin = req.user.gstin;
+            const allowedGstins = [req.user.gstin];
+            if (req.user.businesses && req.user.businesses.length > 0) {
+                allowedGstins.push(...req.user.businesses.map(b => b.gstin));
+            }
+            matchQuery.buyerGstin = { $in: allowedGstins };
         }
 
         const sixMonthsAgo = new Date();
@@ -182,6 +189,48 @@ exports.getGstSummary = async (req, res, next) => {
                 totals: totals[0] || { cgst: 0, sgst: 0, igst: 0, grand: 0 }
             }
         });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.getAuditLogs = async (req, res, next) => {
+    try {
+        const logs = await require('../models/AuditLog')
+            .find({ userId: req.user.id })
+            .sort({ createdAt: -1 })
+            .limit(100);
+        res.status(200).json({ success: true, data: logs });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.exportGstCSV = async (req, res, next) => {
+    try {
+        const allowedGstins = [];
+        if (req.user.gstin) allowedGstins.push(req.user.gstin);
+        if (req.user.businesses) {
+            req.user.businesses.forEach(b => allowedGstins.push(b.gstin));
+        }
+
+        const query = req.user.role === 'seller' 
+            ? { sellerGstin: { $in: allowedGstins } } 
+            : { buyerGstin: { $in: allowedGstins } };
+            
+        const invoices = await require('../models/Invoice').find(query).sort({ date: -1 });
+
+        const header = "Invoice Number,Date,Counterparty GSTIN,Amount,CGST,SGST,IGST,Status\n";
+        const rows = invoices.map(inv => {
+            const cpGstin = req.user.role === 'seller' ? inv.buyerGstin : inv.sellerGstin;
+            const dt = new Date(inv.date).toLocaleDateString('en-GB');
+            return `${inv.invoiceNumber},${dt},${cpGstin},${inv.amount},${inv.tax.cgst},${inv.tax.sgst},${inv.tax.igst},${inv.status}`;
+        }).join('\n');
+        
+        const csv = header + rows;
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="InvoiceSync_GST_Return.csv"');
+        res.status(200).send(csv);
     } catch (err) {
         next(err);
     }

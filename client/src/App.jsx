@@ -1,65 +1,64 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import OAuthCallback from "./pages/OAuthCallback";
-import SellerDashboard from "./pages/SellerDashboard";
-import BuyerDashboard from "./pages/BuyerDashboard";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import SellerDashboard from './pages/SellerDashboard';
+import BuyerDashboard from './pages/BuyerDashboard';
 
 function ProtectedRoute({ children, role }) {
-  const { user, token } = useAuth();
+  const { user, loading } = useAuth();
 
-  // If unauthenticated, redirect to login page
-  if (!token || !user) {
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-dark">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If authenticated but trying to access the wrong role dashboard, bounce back
-  if (user.role !== role) {
-    return <Navigate to={user.role === "seller" ? "/seller/dashboard" : "/buyer/dashboard"} replace />;
+  if (role && user.role !== role) {
+    return <Navigate to={user.role === 'buyer' ? '/buyer/dashboard' : '/seller/dashboard'} replace />;
   }
 
-  // Identity verification passed, mount dashboard scope
   return children;
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          {/* Public Views */}
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/signup" element={<Navigate to="/register" replace />} />
-          <Route path="/oauth/callback" element={<OAuthCallback />} />
-
-          {/* Secure Seller Topology */}
-          <Route 
-            path="/seller/dashboard" 
-            element={
-              <ProtectedRoute role="seller">
-                <SellerDashboard />
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Secure Buyer Topology */}
-          <Route 
-            path="/buyer/dashboard" 
-            element={
-              <ProtectedRoute role="buyer">
-                <BuyerDashboard />
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Global Fallback Route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/seller/:tab?"
+              element={
+                <ProtectedRoute role="seller">
+                  <SellerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyer/:tab?"
+              element={
+                <ProtectedRoute role="buyer">
+                  <BuyerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   );
 }

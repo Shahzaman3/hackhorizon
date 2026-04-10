@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopBar from '../components/dashboard/TopBar';
 import StatCard from '../components/dashboard/StatCard';
 import InvoiceTable from '../components/dashboard/InvoiceTable';
 import InvoiceModal from '../components/dashboard/InvoiceModal';
 import StatusBadge from '../components/dashboard/StatusBadge';
+import SettingsTab from '../components/dashboard/SettingsTab';
+import AuditFeed from '../components/dashboard/AuditFeed';
 import api from '../api/axios';
-import { BarChart, Bar, ResponsiveContainer, Tooltip } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 export default function BuyerDashboard() {
+  const { tab = 'overview' } = useParams();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
@@ -58,6 +63,21 @@ export default function BuyerDashboard() {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const response = await api.get('/dashboard/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'InvoiceSync_GST_Return.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.log('Failed to export CSV', err);
+    }
+  };
+
   const fmtCurrency = (val) => {
     if (!val && val !== 0) return '--';
     return val.toLocaleString('en-IN');
@@ -65,17 +85,17 @@ export default function BuyerDashboard() {
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '--';
-    return new Date(dateStr).toLocaleDateString('en-GB');
+    return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   if (loading) {
     return (
-      <div className="flex bg-[#0a0f0d] h-screen overflow-hidden">
+      <div className="flex bg-[#FDFBF7] h-screen overflow-hidden">
         <Sidebar role="buyer" />
         <div className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <span className="w-10 h-10 border-2 border-[#4ade80]/20 border-t-[#4ade80] rounded-full spin" />
-            <span className="text-sm text-[#3d5945] font-medium">Loading dashboard...</span>
+          <div className="flex flex-col items-center gap-4">
+            <span className="w-12 h-12 border-4 border-[#047857]/20 border-t-[#047857] rounded-full spin" />
+            <span className="text-sm text-[#4D6357] font-bold tracking-widest uppercase">Initializing...</span>
           </div>
         </div>
       </div>
@@ -83,169 +103,343 @@ export default function BuyerDashboard() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0a0f0d] relative">
+    <div className="flex h-screen overflow-hidden bg-[#FDFBF7] relative">
       <Sidebar role="buyer" isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-[#0A2518]/40 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <TopBar title="Buyer Overview" onMenuClick={() => setMobileMenuOpen(true)} />
+        <TopBar title="Buyer Experience" onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-7 space-y-6">
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 lg:p-12 space-y-10">
 
-          {/* Page header */}
-          <div>
-            <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>Dashboard</h2>
-            <p className="text-xs text-[#3d5945] mt-0.5">Review and manage your received invoices</p>
-          </div>
-
-          {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Invoices Received" value={stats?.totalReceived || 0}                        sub="From all sellers"       color="border-primary"      />
-            <StatCard label="Pending Review"     value={stats?.pendingCount || 0}                        sub="Needs your action"      color="border-yellow-500"   />
-            <StatCard label="GST Payable"        value={`₹${fmtCurrency(stats?.totals?.grand || 0)}`}   sub="On accepted invoices"   color="border-red-400"      />
-            <StatCard label="Outstanding"        value={`₹${fmtCurrency(stats?.totalOutstanding || 0)}`} sub="Unpaid invoices"       color="border-orange-400"   />
-          </div>
-
-          {/* Invoice Table + GST Card */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2">
-              <InvoiceTable
-                title="Received Invoices"
-                invoices={invoices}
-                role="buyer"
-                onRowClick={(inv) => setSelectedInvoice(inv)}
-                onRefresh={fetchData}
-              />
+          {/* PAGE HEADER */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="animate-fade-up">
+              <div className="text-[10px] font-bold text-[#047857] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                 <span className="w-4 h-px bg-[#047857]/30" />
+                 Compliance Dashboard
+              </div>
+              <h2 className="text-3xl font-extrabold text-[#0A2518] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+                {tab.charAt(0).toUpperCase() + tab.slice(1)} View
+              </h2>
+              <p className="text-sm text-[#728279] mt-2 font-medium max-w-lg">
+                Manage your supply chain compliance, track GST input taxing, and review received invoices from all your vendors.
+              </p>
             </div>
+            
+            <div className="flex items-center gap-3">
+               <button className="px-5 py-2.5 bg-white border border-[#E5E2D9] rounded-xl text-xs font-bold text-[#4D6357] hover:border-[#047857]/30 transition-all shadow-sm">
+                  Filter Period
+               </button>
+               <button onClick={handleExportCSV} className="px-5 py-2.5 bg-[#047857] text-white rounded-xl text-xs font-bold hover:bg-[#065F46] transition-all shadow-lg shadow-[#047857]/20 flex items-center gap-2">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  Export Data
+               </button>
+            </div>
+          </div>
 
-            {/* GST Summary */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col">
-              <h3 className="font-bold text-base text-white mb-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>My GST Payable</h3>
+          {/* OVERVIEW CONTENT */}
+          {tab === 'overview' && (
+            <div className="space-y-10 animate-fade-in">
+              {/* Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard label="Invoices Received" value={stats?.totalReceived || 0}                        sub="Records found"       color="border-primary"      />
+                <StatCard label="Pending Approval"   value={stats?.pendingCount || 0}                        sub="Action required"      color="border-yellow-500"   />
+                <StatCard label="Input GST Credits"  value={`₹${fmtCurrency(stats?.totals?.grand || 0)}`}   sub="Tax claimable"        color="border-red-400"      />
+                <StatCard label="Net Payable"        value={`₹${fmtCurrency(stats?.totalOutstanding || 0)}`} sub="To suppliers"         color="border-orange-400"   />
+              </div>
 
-              <div className="flex flex-col gap-4 mb-5">
-                {[
-                  { label: 'CGST', value: gstData?.cgst || 0 },
-                  { label: 'SGST', value: gstData?.sgst || 0 },
-                  { label: 'IGST', value: gstData?.igst || 0 },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex justify-between items-center">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#3d5945]">{label}</span>
-                    <span className="font-bold text-sm text-white">₹{fmtCurrency(value)}</span>
+              {/* Central Grid */}
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+                
+                {/* Main Table Container */}
+                <div className="xl:col-span-8 bg-white border border-[#E5E2D9] rounded-[2rem] overflow-hidden shadow-sm">
+                  <InvoiceTable
+                    title="Latest Acquisitions"
+                    invoices={invoices.slice(0, 10)}
+                    role="buyer"
+                    onRowClick={(inv) => setSelectedInvoice(inv)}
+                    onRefresh={fetchData}
+                  />
+                  <div className="p-6 bg-[#F4F1EA]/30 border-t border-[#E5E2D9] flex justify-center">
+                     <button onClick={() => navigate('/buyer/invoices')} className="text-xs font-bold text-[#047857] hover:underline uppercase tracking-widest">
+                        View All Invoices
+                     </button>
                   </div>
-                ))}
-                <div className="border-t border-[#243124] pt-4 flex justify-between items-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#6b8f76]">Total GST</span>
-                  <span className="font-bold text-lg text-[#4ade80]">
-                    ₹{fmtCurrency((gstData?.cgst || 0) + (gstData?.sgst || 0) + (gstData?.igst || 0))}
-                  </span>
+                </div>
+
+                {/* Sidebar Cards */}
+                <div className="xl:col-span-4 space-y-8">
+                  
+                  {/* GST Credit Bar Chart */}
+                  <div className="bg-white border border-[#E5E2D9] rounded-[2rem] p-8 shadow-sm">
+                    <div className="flex flex-col mb-8 text-center border-b border-[#E5E2D9] pb-6">
+                       <h3 className="font-extrabold text-[#0A2518] text-lg" style={{ fontFamily: 'Plus Jakarta Sans' }}>GST Breakdown</h3>
+                       <p className="text-[11px] font-bold text-[#728279] uppercase tracking-widest mt-1">Current Billing Cycle</p>
+                    </div>
+
+                    <div className="space-y-5">
+                      {[
+                        { label: 'CGST', value: gstData?.totals?.cgst || 0, color: '#047857' },
+                        { label: 'SGST', value: gstData?.totals?.sgst || 0, color: '#047857' },
+                        { label: 'IGST', value: gstData?.totals?.igst || 0, color: '#065F46' },
+                      ].map(({ label, value, color }) => (
+                        <div key={label} className="space-y-3">
+                          <div className="flex justify-between items-center text-[10px] uppercase font-black tracking-widest text-[#4D6357]">
+                             <span>{label}</span>
+                             <span className="text-[#0A2518]">₹{fmtCurrency(value)}</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-[#F4F1EA] rounded-full overflow-hidden">
+                             <div 
+                                className="h-full rounded-full transition-all duration-1000" 
+                                style={{ width: `${Math.min(100, (value / (gstData?.totals?.grand || 1)) * 100)}%`, backgroundColor: color }} 
+                             />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-[#E5E2D9] flex justify-between items-center">
+                       <div className="flex flex-col">
+                          <span className="text-[10px] font-extrabold text-[#728279] uppercase tracking-widest">Total ITC</span>
+                          <span className="text-2xl font-black text-[#047857] mt-1">₹{fmtCurrency(gstData?.totals?.grand || 0)}</span>
+                       </div>
+                       <div className="w-12 h-12 bg-[#047857]/5 rounded-2xl flex items-center justify-center text-[#047857]">
+                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                       </div>
+                    </div>
+                  </div>
+
+                  {/* Missing Invoice Request Card */}
+                  <div className="bg-[#047857] rounded-[2rem] p-8 text-white shadow-xl shadow-[#047857]/20 relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-10 -translate-y-10 blur-3xl group-hover:scale-150 transition-transform duration-700" />
+                     
+                     <h3 className="font-bold text-lg mb-2 relative z-10" style={{ fontFamily: 'Plus Jakarta Sans' }}>Missing something?</h3>
+                     <p className="text-white/70 text-sm mb-6 relative z-10 leading-relaxed font-medium">Request a digital invoice from your seller directly within the platform.</p>
+                     <button onClick={() => navigate('/buyer/requests')} className="bg-white text-[#047857] rounded-xl px-6 py-3 text-xs font-black uppercase tracking-widest hover:bg-[#FDFBF7] transition-all relative z-10 shadow-lg">
+                        Submit a Request
+                     </button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* INVOICES TAB */}
+          {tab === 'invoices' && (
+            <div className="animate-fade-in">
+               <div className="bg-white border border-[#E5E2D9] rounded-[2rem] overflow-hidden shadow-sm">
+                  <InvoiceTable
+                    title="Comprehensive History"
+                    invoices={invoices}
+                    role="buyer"
+                    onRowClick={(inv) => setSelectedInvoice(inv)}
+                    onRefresh={fetchData}
+                  />
+               </div>
+            </div>
+          )}
+
+          {/* REQUESTS TAB */}
+          {tab === 'requests' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-fade-in items-start">
+              
+              {/* Form Side */}
+              <div className="lg:col-span-4 sticky top-[100px] space-y-6">
+                <div className="bg-white border border-[#E5E2D9] rounded-[2rem] p-8 shadow-sm">
+                  <h3 className="font-extrabold text-[#0A2518] text-xl mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>New Request</h3>
+                  <p className="text-xs text-[#728279] font-medium mb-8">We'll notify the vendor as soon as you submit.</p>
+                  
+                  <form onSubmit={handleRequestSubmit} className="space-y-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-[#728279] uppercase tracking-[0.2em]">Seller GSTIN</label>
+                      <input
+                        type="text"
+                        required
+                        maxLength="15"
+                        value={reqSellerGstin}
+                        onChange={(e) => setReqSellerGstin(e.target.value.toUpperCase())}
+                        placeholder="e.g. 27AAPFU0939F1ZV"
+                        className="w-full bg-[#F4F1EA]/50 border border-[#E5E2D9] rounded-2xl px-5 py-4 text-sm font-bold text-[#0A2518] focus:border-[#047857] outline-none transition-all placeholder-[#A2A9A5]"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-[#728279] uppercase tracking-[0.2em]">Note to Seller</label>
+                      <textarea
+                        rows={4}
+                        value={reqNote}
+                        onChange={(e) => setReqNote(e.target.value)}
+                        placeholder="Mention order ID or date..."
+                        className="w-full bg-[#F4F1EA]/50 border border-[#E5E2D9] rounded-2xl px-5 py-4 text-sm font-medium text-[#0A2518] focus:border-[#047857] outline-none transition-all placeholder-[#A2A9A5] resize-none"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={reqLoading}
+                      className="w-full bg-[#047857] text-white rounded-2xl py-4 font-bold text-sm shadow-xl shadow-[#047857]/20 hover:bg-[#065F46] disabled:opacity-50 transition-all flex items-center justify-center gap-3"
+                    >
+                      {reqLoading && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin" />}
+                      {reqLoading ? 'Processing...' : 'Submit Request'}
+                    </button>
+                  </form>
                 </div>
               </div>
 
-              <div className="h-[140px] w-full mt-auto">
-                {gstData?.history && gstData.history.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={gstData.history}>
-                      <Tooltip
-                        cursor={{ fill: 'rgba(74,222,128,0.04)' }}
-                        contentStyle={{ background: '#192319', border: '1px solid #243124', borderRadius: '10px', fontSize: '12px', color: '#e8f5ec' }}
-                      />
-                      <Bar dataKey="total" fill="#4ade80" radius={[4, 4, 0, 0]} opacity={0.8} />
-                    </BarChart>
-                  </ResponsiveContainer>
+              {/* List Side */}
+              <div className="lg:col-span-8 bg-white border border-[#E5E2D9] rounded-[2rem] p-8 min-h-[500px]">
+                <div className="flex items-center justify-between mb-8 pb-6 border-b border-[#E5E2D9]">
+                   <h4 className="text-sm font-black text-[#0A2518] uppercase tracking-[0.14em]">Request History</h4>
+                   <span className="text-[10px] font-bold text-[#728279] px-3 py-1 bg-[#F4F1EA] rounded-full uppercase tracking-widest">{myRequests.length} Total</span>
+                </div>
+
+                {myRequests.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {myRequests.map((req) => (
+                      <div key={req._id || req.id} className="p-5 border border-[#E5E2D9] rounded-2xl hover:border-[#047857]/30 transition-all flex items-center gap-6 group">
+                        <div className="w-12 h-12 rounded-xl bg-[#F4F1EA] flex items-center justify-center flex-shrink-0 group-hover:bg-[#047857]/5 transition-colors">
+                           <svg className="w-6 h-6 text-[#728279] group-hover:text-[#047857] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                           <div className="flex items-center gap-3 mb-1">
+                              <span className="font-bold text-[#0A2518] truncate">{req.sellerGstin}</span>
+                              <span className="text-[10px] font-bold text-[#728279] px-2 py-0.5 bg-[#F4F1EA] border border-[#E5E2D9] rounded uppercase tracking-tighter">Vendor</span>
+                           </div>
+                           <p className="text-xs text-[#728279] font-medium truncate">"{req.note || 'No note added'}"</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-2 text-right">
+                           <StatusBadge status={req.status} />
+                           <span className="text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest">{formatDate(req.date || req.createdAt)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center text-xs text-[#3d5945] bg-[#0f1812] rounded-xl border border-[#243124] font-medium">
-                    No GST history yet
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <div className="w-20 h-20 rounded-full bg-[#F4F1EA] flex items-center justify-center mb-6">
+                       <svg className="w-10 h-10 text-[#A2A9A5]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                    </div>
+                    <h5 className="text-lg font-bold text-[#0A2518] mb-1">No requests match your filters</h5>
+                    <p className="text-xs text-[#728279] font-medium">Any invoice requests you send will appear here.</p>
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Invoice Request Section */}
-          <div className="flex gap-5 flex-wrap lg:flex-nowrap items-start">
-
-            {/* Request Form */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 w-full lg:max-w-sm flex-shrink-0">
-              <h3 className="font-bold text-base text-white mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                Request a Missing Invoice
-              </h3>
-              <p className="text-xs text-[#3d5945] mb-6">Ask a seller to upload an invoice you're missing</p>
-
-              <form onSubmit={handleRequestSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6b8f76] uppercase tracking-[0.12em] mb-2">Seller GSTIN</label>
-                  <input
-                    type="text"
-                    required
-                    maxLength="15"
-                    value={reqSellerGstin}
-                    onChange={(e) => setReqSellerGstin(e.target.value)}
-                    placeholder="27AAPFU0939F1ZV"
-                    className="w-full bg-[#0f1812] border border-[#243124] rounded-xl px-4 py-3 text-sm text-white font-mono uppercase placeholder-[#3d5945] outline-none focus:border-[#4ade80]/40 focus:ring-2 focus:ring-[#4ade80]/8 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#6b8f76] uppercase tracking-[0.12em] mb-2">Note <span className="normal-case text-[#3d5945] font-medium">(optional)</span></label>
-                  <textarea
-                    rows={3}
-                    value={reqNote}
-                    onChange={(e) => setReqNote(e.target.value)}
-                    placeholder="e.g. Invoice for March order of 500 units"
-                    className="w-full bg-[#0f1812] border border-[#243124] rounded-xl px-4 py-3 text-sm text-white placeholder-[#3d5945] outline-none focus:border-[#4ade80]/40 focus:ring-2 focus:ring-[#4ade80]/8 transition-all resize-none font-medium"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={reqLoading}
-                  className="w-full bg-[#4ade80] hover:bg-[#86efac] text-[#0a0f0d] rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-[#4ade80]/20 disabled:opacity-50"
-                  style={{ fontFamily: 'Plus Jakarta Sans' }}
-                >
-                  {reqLoading ? 'Sending...' : 'Send Request'}
-                </button>
-              </form>
-            </div>
-
-            {/* Requests List */}
-            <div className="flex-1 bg-[#111a15] border border-[#243124] rounded-2xl p-6 min-h-[300px]">
-              <h4 className="text-[11px] font-bold text-[#3d5945] uppercase tracking-[0.14em] mb-5">Your Requests</h4>
-
-              {myRequests.length > 0 ? (
-                <div className="flex flex-col divide-y divide-[#1a2a1f]">
-                  {myRequests.map((req) => (
-                    <div key={req._id || req.id} className="flex items-start gap-4 py-4 group">
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="font-mono text-sm font-bold text-white tracking-wide">{req.sellerGstin}</span>
-                        <span className="text-xs text-[#6b8f76] mt-1 italic truncate">"{req.note || 'No additional note provided'}"</span>
-                      </div>
-                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                        <StatusBadge status={req.status} />
-                        <span className="text-[10px] uppercase font-semibold tracking-wider text-[#3d5945]">
-                          {formatDate(req.date || req.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <div className="w-12 h-12 rounded-2xl bg-[#192319] border border-[#243124] flex items-center justify-center mb-3">
-                    <svg className="w-6 h-6 text-[#3d5945]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
+          {/* GST TAB */}
+          {tab === 'gst' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 animate-fade-in items-start">
+               
+               {/* Analysis Card */}
+               <div className="lg:col-span-8 bg-white border border-[#E5E2D9] rounded-[2rem] p-10 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+                     <div>
+                        <h3 className="text-xl font-extrabold text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>GST Performance</h3>
+                        <p className="text-xs text-[#728279] font-medium mt-1">Detailed breakdown of tax claims and history.</p>
+                     </div>
+                     <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-[#047857]/5 border border-[#047857]/10 rounded-lg text-[10px] font-bold text-[#047857] uppercase tracking-widest">
+                           <span className="w-1.5 h-1.5 rounded-full bg-[#047857]" />
+                           Live Claims
+                        </div>
+                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-[#3d5945]">No requests sent yet</span>
-                </div>
-              )}
-            </div>
-          </div>
 
-        </div>
+                  {/* Chart Area */}
+                  <div className="h-[350px] w-full bg-[#F4F1EA]/20 rounded-[1.5rem] p-6 border border-[#E5E2D9]/50">
+                    {gstData?.breakdown && gstData.breakdown.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={gstData.breakdown}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E2D9" />
+                          <XAxis dataKey="month" axisLine={false} tickLine={false} fontSize={10} fontWeight={700} stroke="#728279" dy={10} />
+                          <YAxis axisLine={false} tickLine={false} fontSize={10} fontWeight={700} stroke="#728279" tickFormatter={(v) => `₹${v/1000}k`} />
+                          <Tooltip
+                            cursor={{ fill: '#047857', opacity: 0.03 }}
+                            contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', fontSize: '12px' }}
+                          />
+                          <Bar 
+                            dataKey="total" 
+                            name="Total GST" 
+                            fill="#047857" 
+                            radius={[6, 6, 0, 0]} 
+                            barSize={40}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-sm font-bold text-[#728279]">
+                        Insufficient data for GST analytics
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 p-8 bg-[#F4F1EA]/30 rounded-[1.5rem] border border-[#E5E2D9]">
+                     {[
+                       { l: 'Avg Monthly ITC', v: `₹${fmtCurrency(24500)}`, c: 'text-[#047857]' },
+                       { l: 'Projected Carryforward', v: `₹${fmtCurrency(12430)}`, c: 'text-[#4D6357]' },
+                       { l: 'Compliance Level', v: 'High (98%)', c: 'text-[#047857]' },
+                     ].map(({ l, v, c }) => (
+                       <div key={l} className="space-y-1">
+                          <span className="text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest">{l}</span>
+                          <span className={`block text-lg font-black ${c}`}>{v}</span>
+                       </div>
+                     ))}
+                  </div>
+               </div>
+
+               {/* Summary Side */}
+               <div className="lg:col-span-4 bg-white border border-[#E5E2D9] rounded-[2rem] p-8 shadow-sm space-y-8">
+                  <h4 className="text-sm font-black text-[#0A2518] uppercase tracking-[0.14em] mb-2">Claim Summary</h4>
+                  
+                  <div className="space-y-6">
+                    <div className="p-5 bg-[#F4F1EA]/50 rounded-2xl border border-[#E5E2D9]">
+                       <span className="text-[10px] font-bold text-[#728279] uppercase tracking-widest block mb-1">Total Input Credits</span>
+                       <span className="text-2xl font-black text-[#0A2518]">₹{fmtCurrency(gstData?.totals?.grand || 0)}</span>
+                    </div>
+
+                    <div className="space-y-4">
+                       {[
+                         { label: 'Central Tax (CGST)', value: gstData?.totals?.cgst || 0 },
+                         { label: 'State Tax (SGST)', value: gstData?.totals?.sgst || 0 },
+                         { label: 'Integrated Tax (IGST)', value: gstData?.totals?.igst || 0 },
+                       ].map(({ label, value }) => (
+                         <div key={label} className="flex items-center justify-between text-xs font-bold px-1">
+                            <span className="text-[#4D6357]">{label}</span>
+                            <span className="text-[#0A2518]">₹{fmtCurrency(value)}</span>
+                         </div>
+                       ))}
+                    </div>
+                    
+                    <button onClick={handleExportCSV} className="w-full bg-[#F4F1EA] hover:bg-[#E5E2D9] text-[#0A2518] rounded-xl py-4 text-xs font-black uppercase tracking-widest transition-all">
+                       Download Returns Report
+                    </button>
+                  </div>
+               </div>
+            </div>
+          )}
+
+          {/* AUDIT TAB */}
+          {tab === 'audit' && (
+            <div className="max-w-4xl animate-fade-in">
+              <AuditFeed />
+            </div>
+          )}
+
+          {/* SETTINGS TAB */}
+          {tab === 'settings' && (
+            <div className="max-w-4xl animate-fade-in">
+              <SettingsTab />
+            </div>
+          )}
+
+        </main>
       </div>
 
       {selectedInvoice && (

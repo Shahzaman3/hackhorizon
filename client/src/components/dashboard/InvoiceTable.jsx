@@ -30,7 +30,6 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
     if (actionType === 'accepted') {
       try {
         await api.patch(`/invoices/${inv.id || inv._id}/status`, { status: "accepted", note: "" });
-        alert("Invoice accepted successfully");
         if (onRefresh) onRefresh();
       } catch (err) {
         console.error('Failed to accept invoice', err);
@@ -61,21 +60,21 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
   const formatDate = (dateStr) => {
     if (!dateStr) return '--';
     const d = new Date(dateStr);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear().toString().slice(2)}`;
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
   };
 
   const columns = role === 'seller'
-    ? ['Invoice No.', 'Buyer GSTIN', 'Amount', 'Tax', 'Date', 'Status', 'Integrity', 'Payment', 'Action']
-    : ['Invoice No.', 'Seller GSTIN', 'Amount', 'Tax', 'Date', 'Status', 'Integrity', 'Action'];
+    ? ['Identifier', 'Recipient', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Integrity', 'Settlement', 'Action']
+    : ['Identifier', 'Issuer', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Integrity', 'Action'];
 
   const filterBtn = (f) => (
     <button
       key={f}
       onClick={() => setFilter(f)}
-      className={`px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all duration-200 border ${
+      className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-300 border ${
         filter === f
-          ? 'bg-[#4ade80] text-[#0a0f0d] border-[#4ade80] shadow-md shadow-[#4ade80]/20'
-          : 'bg-[#192319] text-[#6b8f76] border-[#243124] hover:border-[#2e4030] hover:text-white'
+          ? 'bg-[#047857] text-white border-[#047857] shadow-lg shadow-[#047857]/20'
+          : 'bg-white text-[#4D6357] border-[#E5E2D9] hover:border-[#047857]/40 hover:text-[#0A2518] shadow-sm'
       }`}
     >
       {f}
@@ -83,31 +82,30 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
   );
 
   return (
-    <div className="bg-[#111a15] border border-[#243124] rounded-2xl flex flex-col overflow-hidden">
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-6 py-5 border-b border-[#243124] gap-4">
-        <h3 className="font-bold text-base text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+    <div className="bg-white flex flex-col overflow-hidden">
+      {/* Table Local Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-8 py-6 border-b border-[#E5E2D9] gap-4 bg-[#F4F1EA]/10">
+        <h3 className="font-extrabold text-[#0A2518] text-lg tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
           {title}
         </h3>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2.5 flex-wrap">
           {['All', 'Pending', 'Accepted', 'Rejected'].map(filterBtn)}
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Interface */}
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="bg-[#0f1812] border-b border-[#243124]">
+            <tr className="bg-[#F4F1EA]/30 border-b border-[#E5E2D9]">
               {columns.map((col) => (
-                <th key={col} className="px-5 py-3 text-[10px] font-bold text-[#3d5945] uppercase tracking-[0.14em] whitespace-nowrap">
+                <th key={col} className="px-8 py-4 text-[10px] font-black text-[#728279] uppercase tracking-[0.18em] whitespace-nowrap">
                   {col}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-[#E5E2D9]/60">
             {filteredInvoices.length > 0 ? (
               filteredInvoices.map((inv) => {
                 const totalTax = (inv.tax?.cgst || 0) + (inv.tax?.sgst || 0) + (inv.tax?.igst || 0);
@@ -117,110 +115,101 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                 return (
                   <React.Fragment key={invId}>
                     <tr
-                      className="border-b border-[#1a2a1f] hover:bg-[#192319] transition-colors cursor-pointer group"
+                      className="hover:bg-[#F4F1EA]/20 transition-all cursor-pointer group animate-fade-in"
                       onClick={() => onRowClick && onRowClick(inv)}
                     >
-                      <td className="px-5 py-3.5 font-mono text-xs font-bold text-[#4ade80]">{inv.invoiceNumber}</td>
-                      <td className="px-5 py-3.5 text-xs text-[#6b8f76] font-mono tracking-wide">
-                        {role === 'seller' ? inv.buyerGstin : inv.sellerGstin}
+                      <td className="px-8 py-5.5 font-black text-[#0A2518] text-[13px] tracking-tight">{inv.invoiceNumber}</td>
+                      <td className="px-8 py-5.5">
+                        <div className="flex flex-col">
+                           <span className="text-[12px] font-black text-[#047857] uppercase tracking-wider">{role === 'seller' ? inv.buyerGstin : inv.sellerGstin}</span>
+                        </div>
                       </td>
-                      <td className="px-5 py-3.5 font-bold text-white text-sm">₹{inv.amount?.toLocaleString()}</td>
-                      <td className="px-5 py-3.5 text-xs text-[#6b8f76]">₹{totalTax?.toLocaleString()}</td>
-                      <td className="px-5 py-3.5 text-xs text-[#3d5945] font-medium">{formatDate(inv.date)}</td>
+                      <td className="px-8 py-5.5 font-black text-[#0A2518] text-[14px]">₹{inv.amount?.toLocaleString('en-IN')}</td>
+                      <td className="px-8 py-5.5 text-[12px] font-bold text-[#4D6357]">₹{totalTax?.toLocaleString('en-IN')}</td>
+                      <td className="px-8 py-5.5 text-[11px] text-[#728279] font-bold uppercase tracking-widest">{formatDate(inv.date)}</td>
 
                       {role === 'seller' ? (
                         <>
-                          <td className="px-5 py-3.5"><StatusBadge status={inv.status} /></td>
-                          <td className="px-5 py-3.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
-                          <td className="px-5 py-3.5">
+                          <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
+                          <td className="px-8 py-5.5">
                             <button
                               onClick={(e) => handlePaymentToggle(inv, e)}
-                              className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border transition-all ${
+                              className={`text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-[0.12em] border transition-all duration-300 ${
                                 isPaid
-                                  ? 'bg-[#4ade80]/10 text-[#4ade80] border-[#4ade80]/20 hover:bg-[#4ade80]/20'
-                                  : 'bg-[#f87171]/10 text-[#f87171] border-[#f87171]/20 hover:bg-[#f87171]/20'
+                                  ? 'bg-[#047857]/5 text-[#047857] border-[#047857]/20 hover:bg-[#047857] hover:text-white'
+                                  : 'bg-[#dc2626]/5 text-[#dc2626] border-[#dc2626]/20 hover:bg-[#dc2626] hover:text-white'
                               }`}
                             >
-                              {isPaid ? 'Paid' : 'Unpaid'}
+                              {isPaid ? 'Settled' : 'Outstanding'}
                             </button>
                           </td>
-                          <td className="px-5 py-3.5">
-                            <span className="text-xs font-bold text-[#4ade80] opacity-0 group-hover:opacity-100 transition-opacity">
-                              View →
-                            </span>
+                          <td className="px-8 py-5.5 text-right">
+                             <div className="w-8 h-8 rounded-full bg-[#F4F1EA] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
+                             </div>
                           </td>
                         </>
                       ) : (
                         <>
-                          <td className="px-5 py-3.5"><StatusBadge status={inv.status} /></td>
-                          <td className="px-5 py-3.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
-                          <td className="px-5 py-3.5" onClick={(e) => e.stopPropagation()}>
+                          <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
+                          <td className="px-8 py-5.5" onClick={(e) => e.stopPropagation()}>
                             {inv.status?.toLowerCase() === 'pending' ? (
-                              <div className="flex gap-1.5">
+                              <div className="flex gap-2">
                                 <button
                                   onClick={(e) => handleBuyerActionClick(inv, 'accepted', e)}
-                                  className="bg-[#4ade80]/10 text-[#4ade80] border border-[#4ade80]/20 hover:bg-[#4ade80]/20 text-[10px] px-2.5 py-1 rounded-lg font-bold transition-all"
+                                  className="bg-[#047857] text-white text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-xl hover:bg-[#065F46] transition-all shadow-lg shadow-[#047857]/10"
                                 >
                                   Accept
                                 </button>
                                 <button
                                   onClick={(e) => handleBuyerActionClick(inv, 'rejected', e)}
-                                  className="bg-[#f87171]/10 text-[#f87171] border border-[#f87171]/20 hover:bg-[#f87171]/20 text-[10px] px-2.5 py-1 rounded-lg font-bold transition-all"
+                                  className="bg-white border border-[#dc2626]/30 text-[#dc2626] text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-xl hover:bg-[#dc2626] hover:text-white transition-all shadow-sm"
                                 >
                                   Reject
                                 </button>
-                                <button
-                                  onClick={(e) => handleBuyerActionClick(inv, 'modified', e)}
-                                  className="bg-[#60a5fa]/10 text-[#60a5fa] border border-[#60a5fa]/20 hover:bg-[#60a5fa]/20 text-[10px] px-2.5 py-1 rounded-lg font-bold transition-all"
-                                >
-                                  Modify
-                                </button>
                               </div>
                             ) : (
-                              <span
-                                onClick={() => onRowClick && onRowClick(inv)}
-                                className="text-xs font-bold text-[#4ade80] hover:text-white cursor-pointer transition-colors"
-                              >
-                                Details →
-                              </span>
+                               <div className="w-8 h-8 rounded-full bg-[#F4F1EA] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
+                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
+                               </div>
                             )}
                           </td>
                         </>
                       )}
                     </tr>
 
-                    {/* Inline Action Row */}
+                    {/* Inline Action View */}
                     {inlineAction?.id === invId && (
-                      <tr className="bg-[#0f1812] border-b border-[#243124]">
-                        <td colSpan={columns.length} className="px-5 py-3">
-                          <div className="flex items-center gap-3">
-                            <svg className="w-4 h-4 text-[#3d5945] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                            </svg>
+                      <tr className="bg-[#F4F1EA]/20 animate-scale-in">
+                        <td colSpan={columns.length} className="px-8 py-6">
+                          <div className="flex items-center gap-5 bg-white p-4 rounded-2xl border border-[#E5E2D9] shadow-inner shadow-[#0A2518]/5">
+                            <div className="w-10 h-10 rounded-xl bg-[#dc2626]/10 flex items-center justify-center text-[#dc2626]">
+                               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            </div>
                             <input
                               type="text"
                               value={actionNote}
                               onChange={(e) => setActionNote(e.target.value)}
-                              placeholder={inlineAction.type === 'rejected' ? 'Reason for rejection...' : 'What needs to be changed?'}
-                              className="text-xs bg-[#192319] border border-[#243124] rounded-lg px-4 py-2.5 flex-1 min-w-0 outline-none focus:border-[#4ade80]/40 text-white placeholder-[#3d5945] font-medium"
+                              placeholder={inlineAction.type === 'rejected' ? 'Provide a formal reason for rejection...' : 'Specify required modification detail...'}
+                              className="text-sm bg-transparent border-b-2 border-[#E5E2D9] focus:border-[#047857] rounded-none px-1 py-2 flex-1 outline-none text-[#0A2518] placeholder-[#A2A9A5] font-bold transition-all"
                               autoFocus
                             />
-                            <button
-                              onClick={(e) => submitInlineAction(inv, e)}
-                              className={`text-xs font-bold px-4 py-2.5 rounded-lg text-white transition-colors ${
-                                inlineAction.type === 'rejected'
-                                  ? 'bg-[#f87171]/80 hover:bg-[#f87171]'
-                                  : 'bg-[#60a5fa]/80 hover:bg-[#60a5fa]'
-                              }`}
-                            >
-                              Confirm
-                            </button>
-                            <button
-                              onClick={() => setInlineAction(null)}
-                              className="text-xs font-bold text-[#3d5945] hover:text-[#6b8f76] px-2 py-2.5 transition-colors"
-                            >
-                              Cancel
-                            </button>
+                            <div className="flex gap-2">
+                               <button
+                                 onClick={(e) => submitInlineAction(inv, e)}
+                                 className="text-[10px] font-black uppercase tracking-widest px-6 py-3 rounded-xl bg-[#047857] text-white hover:bg-[#065F46] shadow-lg shadow-[#047857]/10"
+                               >
+                                 Confirm Action
+                               </button>
+                               <button
+                                 onClick={() => setInlineAction(null)}
+                                 className="text-[10px] font-black uppercase tracking-widest px-4 py-3 rounded-xl text-[#728279] hover:bg-[#F4F1EA]"
+                               >
+                                 Cancel
+                               </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -230,14 +219,16 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
               })
             ) : (
               <tr>
-                <td colSpan={columns.length} className="px-5 py-12 text-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 rounded-xl bg-[#192319] border border-[#243124] flex items-center justify-center">
-                      <svg className="w-5 h-5 text-[#3d5945]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                <td colSpan={columns.length} className="px-8 py-32 text-center">
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="w-20 h-20 rounded-full bg-[#F4F1EA] flex items-center justify-center relative overflow-hidden">
+                       <svg className="w-10 h-10 text-[#A2A9A5] relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                       <div className="absolute inset-0 bg-gradient-to-tr from-[#047857]/5 to-transparent animate-pulse" />
                     </div>
-                    <span className="text-sm font-medium text-[#3d5945]">No invoices found</span>
+                    <div className="space-y-1">
+                       <h5 className="text-lg font-black text-[#0A2518]">No ledger entries found</h5>
+                       <p className="text-xs font-medium text-[#728279]">Your historical records will manifest here once generated.</p>
+                    </div>
                   </div>
                 </td>
               </tr>

@@ -8,69 +8,67 @@ const row2 = [
   'Nykaa Trade', 'Meesho Sellers', 'Razorpay Biz', 'Zepto Commerce', 'Groww Business', 'Paytm B2B'
 ];
 
-const row1Duplicated = [...row1, ...row1];
-const row2Duplicated = [...row2, ...row2];
+const allCompanies = [...row1, ...row2];
+
+const companyLogos = {
+  'Tata Ventures': 'TV',
+  'Infosys Supply': 'IS',
+  'Wipro Traders': 'WT',
+  'Reliance B2B': 'RB',
+  'HCL Commerce': 'HC',
+  'Mahindra Goods': 'MG',
+  'Birla Exports': 'BE',
+  'HDFC Trade': 'HT',
+  'Bajaj Suppliers': 'BS',
+  'Sun Pharma B2B': 'SP',
+  'Adani Logistics': 'AL',
+  'Zomato Business': 'ZB',
+  'Swiggy Partners': 'SG',
+  'Flipkart Wholesale': 'FW',
+  'Nykaa Trade': 'NT',
+  'Meesho Sellers': 'MS',
+  'Razorpay Biz': 'RZ',
+  'Zepto Commerce': 'ZC',
+  'Groww Business': 'GB',
+  'Paytm B2B': 'PB',
+};
+
+const mergedDuplicated = [...allCompanies, ...allCompanies];
 
 export default function Marquee() {
   return (
-    <section className="bg-[#0a0f0d] py-14 overflow-hidden border-y border-white/[0.04]">
-      <p className="text-[11px] font-semibold text-[#3d5945] text-center mb-8 uppercase tracking-[0.18em]">
-        Trusted by leading businesses across India
-      </p>
+    <div className="group relative w-full overflow-hidden py-4 px-0">
+      <div className="absolute left-0 top-0 h-full w-24 sm:w-32 bg-linear-to-r from-[#FDFBF7] via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
+      <div className="absolute right-0 top-0 h-full w-24 sm:w-32 bg-linear-to-l from-[#FDFBF7] via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
 
-      {/* Row 1 — scrolls left */}
-      <div className="relative w-full flex overflow-hidden mb-4 group">
-        {/* fade edges */}
-        <div className="absolute left-0 top-0 w-24 h-full bg-gradient-to-r from-[#0a0f0d] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-[#0a0f0d] to-transparent z-10 pointer-events-none" />
-
-        <div
-          className="flex w-max gap-3 group-hover:[animation-play-state:paused]"
-          style={{ animation: 'scrollLeft 35s linear infinite' }}
-        >
-          {row1Duplicated.map((name, i) => (
+      <div
+        className="flex w-max gap-4 group-hover:[animation-play-state:paused]"
+        style={{ animation: 'scrollContinuous 60s linear infinite' }}
+      >
+        {mergedDuplicated.map((name, i) => (
+          <div key={`marquee-${i}`} className="flex items-center gap-2 shrink-0 px-4 py-2">
             <div
-              key={`r1-${i}`}
-              className="flex-shrink-0 px-5 py-2 rounded-full border border-[#243124] bg-[#111a15] text-[#6b8f76] text-xs font-semibold whitespace-nowrap hover:border-[#4ade80]/40 hover:text-white hover:bg-[#192319] transition-all cursor-default"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white bg-[#065F46] border border-[#047857]/35"
+              style={{ fontFamily: 'Plus Jakarta Sans' }}
+            >
+              {companyLogos[name]}
+            </div>
+            <span
+              className="text-sm font-semibold text-[#4D6357] whitespace-nowrap hover:text-[#0A2518] transition-colors duration-300 cursor-default"
               style={{ fontFamily: 'Plus Jakarta Sans' }}
             >
               {name}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Row 2 — scrolls right */}
-      <div className="relative w-full flex overflow-hidden group">
-        <div className="absolute left-0 top-0 w-24 h-full bg-gradient-to-r from-[#0a0f0d] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-[#0a0f0d] to-transparent z-10 pointer-events-none" />
-
-        <div
-          className="flex w-max gap-3 group-hover:[animation-play-state:paused]"
-          style={{ animation: 'scrollRight 35s linear infinite' }}
-        >
-          {row2Duplicated.map((name, i) => (
-            <div
-              key={`r2-${i}`}
-              className="flex-shrink-0 px-5 py-2 rounded-full border border-[#243124] bg-[#111a15] text-[#6b8f76] text-xs font-semibold whitespace-nowrap hover:border-[#4ade80]/40 hover:text-white hover:bg-[#192319] transition-all cursor-default"
-              style={{ fontFamily: 'Plus Jakarta Sans' }}
-            >
-              {name}
-            </div>
-          ))}
-        </div>
+            </span>
+          </div>
+        ))}
       </div>
 
       <style>{`
-        @keyframes scrollLeft {
+        @keyframes scrollContinuous {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
-        @keyframes scrollRight {
-          from { transform: translateX(-50%); }
-          to   { transform: translateX(0); }
-        }
       `}</style>
-    </section>
+    </div>
   );
 }
