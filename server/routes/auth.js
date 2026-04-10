@@ -1,8 +1,12 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { getCurrentUser, switchRole, updateGstin, logout } = require('../controllers/authController');
+const { getCurrentUser, switchRole, updateGstin, logout, register, login } = require('../controllers/authController');
 const verifyToken = require('../middleware/auth');
+
+// Local auth routes
+router.post('/register', register);
+router.post('/login', login);
 
 // Google OAuth routes
 router.get('/google', (req, res, next) => {

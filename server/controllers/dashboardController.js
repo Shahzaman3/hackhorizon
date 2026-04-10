@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 exports.getSellerDashboard = async (req, res, next) => {
     try {
-        const sellerId = new mongoose.Types.ObjectId(req.user.userId);
+        const sellerId = new mongoose.Types.ObjectId(req.user.id);
 
         const [
             totalSent,
@@ -136,7 +136,7 @@ exports.getGstSummary = async (req, res, next) => {
     try {
         const matchQuery = { status: "accepted" };
         if (req.user.role === "seller") {
-            matchQuery.sellerId = new mongoose.Types.ObjectId(req.user.userId);
+            matchQuery.sellerId = new mongoose.Types.ObjectId(req.user.id);
         } else {
             matchQuery.buyerGstin = req.user.gstin;
         }

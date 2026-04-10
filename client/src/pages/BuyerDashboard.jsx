@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopBar from '../components/dashboard/TopBar';
 import StatCard from '../components/dashboard/StatCard';
@@ -9,6 +10,8 @@ import api from '../api/axios';
 import { BarChart, Bar, ResponsiveContainer, Tooltip } from 'recharts';
 
 export default function BuyerDashboard() {
+  const { tab = 'dashboard' } = useParams();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
@@ -99,13 +102,13 @@ export default function BuyerDashboard() {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-7 space-y-6">
 
           {/* Page header */}
-          <div>
+          <div className={`${tab !== 'dashboard' ? 'hidden' : ''}`}>
             <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>Dashboard</h2>
             <p className="text-xs text-[#3d5945] mt-0.5">Review and manage your received invoices</p>
           </div>
 
           {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${tab !== 'dashboard' ? 'hidden' : ''}`}>
             <StatCard label="Invoices Received" value={stats?.totalReceived || 0}                        sub="From all sellers"       color="border-primary"      />
             <StatCard label="Pending Review"     value={stats?.pendingCount || 0}                        sub="Needs your action"      color="border-yellow-500"   />
             <StatCard label="GST Payable"        value={`₹${fmtCurrency(stats?.totals?.grand || 0)}`}   sub="On accepted invoices"   color="border-red-400"      />
@@ -113,8 +116,8 @@ export default function BuyerDashboard() {
           </div>
 
           {/* Invoice Table + GST Card */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2">
+          <div className={`grid grid-cols-1 xl:grid-cols-3 gap-5 ${tab !== 'dashboard' && tab !== 'invoices' && tab !== 'gst' ? 'hidden' : ''}`}>
+            <div className={`xl:col-span-2 ${tab === 'gst' ? 'hidden' : ''}`}>
               <InvoiceTable
                 title="Received Invoices"
                 invoices={invoices}
@@ -125,14 +128,14 @@ export default function BuyerDashboard() {
             </div>
 
             {/* GST Summary */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col">
+            <div className={`bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col ${tab === 'invoices' ? 'hidden' : ''} ${tab === 'gst' ? 'xl:col-span-3 max-w-2xl' : ''}`}>
               <h3 className="font-bold text-base text-white mb-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>My GST Payable</h3>
 
               <div className="flex flex-col gap-4 mb-5">
                 {[
-                  { label: 'CGST', value: gstData?.cgst || 0 },
-                  { label: 'SGST', value: gstData?.sgst || 0 },
-                  { label: 'IGST', value: gstData?.igst || 0 },
+                  { label: 'CGST', value: gstData?.totals?.cgst || 0 },
+                  { label: 'SGST', value: gstData?.totals?.sgst || 0 },
+                  { label: 'IGST', value: gstData?.totals?.igst || 0 },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between items-center">
                     <span className="text-xs font-bold uppercase tracking-wider text-[#3d5945]">{label}</span>
@@ -142,15 +145,15 @@ export default function BuyerDashboard() {
                 <div className="border-t border-[#243124] pt-4 flex justify-between items-center">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#6b8f76]">Total GST</span>
                   <span className="font-bold text-lg text-[#4ade80]">
-                    ₹{fmtCurrency((gstData?.cgst || 0) + (gstData?.sgst || 0) + (gstData?.igst || 0))}
+                    ₹{fmtCurrency((gstData?.totals?.cgst || 0) + (gstData?.totals?.sgst || 0) + (gstData?.totals?.igst || 0))}
                   </span>
                 </div>
               </div>
 
               <div className="h-[140px] w-full mt-auto">
-                {gstData?.history && gstData.history.length > 0 ? (
+                {gstData?.breakdown && gstData.breakdown.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={gstData.history}>
+                    <BarChart data={gstData.breakdown}>
                       <Tooltip
                         cursor={{ fill: 'rgba(74,222,128,0.04)' }}
                         contentStyle={{ background: '#192319', border: '1px solid #243124', borderRadius: '10px', fontSize: '12px', color: '#e8f5ec' }}
@@ -168,7 +171,7 @@ export default function BuyerDashboard() {
           </div>
 
           {/* Invoice Request Section */}
-          <div className="flex gap-5 flex-wrap lg:flex-nowrap items-start">
+          <div className={`flex gap-5 flex-wrap lg:flex-nowrap items-start ${tab !== 'dashboard' && tab !== 'requests' ? 'hidden' : ''}`}>
 
             {/* Request Form */}
             <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 w-full lg:max-w-sm flex-shrink-0">

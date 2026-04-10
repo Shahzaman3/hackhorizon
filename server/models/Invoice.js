@@ -14,7 +14,6 @@ const invoiceSchema = new mongoose.Schema({
     },
     sellerGstin: { 
         type: String, 
-        required: true, 
         uppercase: true 
     },
     buyerGstin: { 

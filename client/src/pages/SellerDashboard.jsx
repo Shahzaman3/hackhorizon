@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopBar from '../components/dashboard/TopBar';
 import StatCard from '../components/dashboard/StatCard';
@@ -9,6 +10,8 @@ import api from '../api/axios';
 import { BarChart, Bar, ResponsiveContainer, Tooltip } from 'recharts';
 
 export default function SellerDashboard() {
+  const { tab = 'dashboard' } = useParams();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -38,6 +41,13 @@ export default function SellerDashboard() {
   };
 
   useEffect(() => { fetchData(); }, []);
+
+  useEffect(() => {
+    if (tab === 'upload') {
+      setShowCreateModal(true);
+      navigate('/seller/dashboard', { replace: true });
+    }
+  }, [tab, navigate]);
 
   const handleFulfillRequest = async (id) => {
     try {
@@ -85,7 +95,7 @@ export default function SellerDashboard() {
         <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-7 space-y-6">
 
           {/* Create Invoice FAB */}
-          <div className="flex justify-between items-center">
+          <div className={`flex justify-between items-center ${tab !== 'dashboard' ? 'hidden' : ''}`}>
             <div>
               <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>Dashboard</h2>
               <p className="text-xs text-[#3d5945] mt-0.5">Here's what's happening with your invoices</p>
@@ -103,7 +113,7 @@ export default function SellerDashboard() {
           </div>
 
           {/* Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${tab !== 'dashboard' ? 'hidden' : ''}`}>
             <StatCard label="Total Invoices"  value={stats?.totalInvoices || 0}                         sub="All time"               color="border-primary"     />
             <StatCard label="Accepted"        value={stats?.acceptedCount || 0}                         sub="Confirmed by buyer"     color="border-green-500"   />
             <StatCard label="Pending"         value={stats?.pendingCount || 0}                          sub="Awaiting buyer action"  color="border-yellow-500"  />
@@ -111,10 +121,11 @@ export default function SellerDashboard() {
           </div>
 
           {/* Invoice Table + GST Card */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div className="lg:col-span-2">
+          <div className={`grid grid-cols-1 lg:grid-cols-3 gap-5 ${tab !== 'dashboard' && tab !== 'invoices' && tab !== 'gst' && tab !== 'payments' ? 'hidden' : ''}`}>
+            <div className={`lg:col-span-2 ${tab === 'gst' ? 'hidden' : ''}`}>
               <InvoiceTable
-                invoices={invoices}
+                title={tab === 'payments' ? "Paid Invoices" : "Invoices"}
+                invoices={tab === 'payments' ? invoices.filter(inv => inv.paymentStatus === 'paid') : invoices}
                 role="seller"
                 onRowClick={(inv) => setSelectedInvoice(inv)}
                 onRefresh={fetchData}
@@ -122,14 +133,14 @@ export default function SellerDashboard() {
             </div>
 
             {/* GST Summary */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col">
+            <div className={`bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col ${tab === 'invoices' || tab === 'payments' ? 'hidden' : ''} ${tab === 'gst' ? 'lg:col-span-3 max-w-2xl' : ''}`}>
               <h3 className="font-bold text-base text-white mb-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>GST Breakdown</h3>
 
               <div className="flex flex-col gap-4 mb-5">
                 {[
-                  { label: 'CGST', value: gstData?.cgst || 0 },
-                  { label: 'SGST', value: gstData?.sgst || 0 },
-                  { label: 'IGST', value: gstData?.igst || 0 },
+                  { label: 'CGST', value: gstData?.totals?.cgst || 0 },
+                  { label: 'SGST', value: gstData?.totals?.sgst || 0 },
+                  { label: 'IGST', value: gstData?.totals?.igst || 0 },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between items-center">
                     <span className="text-xs font-bold uppercase tracking-wider text-[#3d5945]">{label}</span>
@@ -139,15 +150,15 @@ export default function SellerDashboard() {
                 <div className="border-t border-[#243124] pt-4 flex justify-between items-center">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#6b8f76]">Total GST</span>
                   <span className="font-bold text-lg text-[#4ade80]">
-                    ₹{fmtCurrency((gstData?.cgst || 0) + (gstData?.sgst || 0) + (gstData?.igst || 0))}
+                    ₹{fmtCurrency((gstData?.totals?.cgst || 0) + (gstData?.totals?.sgst || 0) + (gstData?.totals?.igst || 0))}
                   </span>
                 </div>
               </div>
 
               <div className="h-[140px] w-full mt-auto">
-                {gstData?.history && gstData.history.length > 0 ? (
+                {gstData?.breakdown && gstData.breakdown.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={gstData.history}>
+                    <BarChart data={gstData.breakdown}>
                       <Tooltip
                         cursor={{ fill: 'rgba(74,222,128,0.04)' }}
                         contentStyle={{ background: '#192319', border: '1px solid #243124', borderRadius: '10px', fontSize: '12px', color: '#e8f5ec' }}
@@ -165,7 +176,7 @@ export default function SellerDashboard() {
           </div>
 
           {/* Invoice Requests */}
-          <div>
+          <div className={`${tab !== 'dashboard' && tab !== 'requests' ? 'hidden' : ''}`}>
             <h3 className="font-bold text-base text-white mb-4" style={{ fontFamily: 'Plus Jakarta Sans' }}>
               Incoming Invoice Requests
             </h3>
@@ -213,6 +224,7 @@ export default function SellerDashboard() {
           invoice={selectedInvoice}
           onClose={() => setSelectedInvoice(null)}
           role="seller"
+          onRefresh={fetchData}
         />
       )}
 

@@ -15,7 +15,7 @@ exports.createInvoice = async (req, res, next) => {
 
         const invoice = await Invoice.create({
             invoiceNumber,
-            sellerId: req.user.userId,
+            sellerId: req.user.id,
             sellerGstin: req.user.gstin,
             buyerGstin,
             amount,
@@ -23,7 +23,7 @@ exports.createInvoice = async (req, res, next) => {
             date,
             statusHistory: [{
                 status: "pending",
-                changedBy: req.user.userId,
+                changedBy: req.user.id,
                 note: "Invoice created"
             }]
         });
@@ -36,7 +36,7 @@ exports.createInvoice = async (req, res, next) => {
 
 exports.getSentInvoices = async (req, res, next) => {
     try {
-        const invoices = await Invoice.find({ sellerId: req.user.userId }).sort({ createdAt: -1 });
+        const invoices = await Invoice.find({ sellerId: req.user.id }).sort({ createdAt: -1 });
         res.status(200).json({ success: true, data: invoices });
     } catch (err) {
         next(err);
@@ -60,7 +60,7 @@ exports.getInvoiceById = async (req, res, next) => {
             return res.status(404).json({ success: false, message: "Invoice not found" });
         }
 
-        const isSeller = invoice.sellerId.toString() === req.user.userId;
+        const isSeller = invoice.sellerId.toString() === req.user.id;
         const isBuyer = invoice.buyerGstin === req.user.gstin;
 
         if (!isSeller && !isBuyer) {
@@ -95,7 +95,7 @@ exports.updateStatus = async (req, res, next) => {
         invoice.statusHistory.push({
             status,
             changedAt: new Date(),
-            changedBy: req.user.userId,
+            changedBy: req.user.id,
             note: note || ""
         });
 
@@ -120,7 +120,7 @@ exports.updatePaymentStatus = async (req, res, next) => {
             return res.status(404).json({ success: false, message: "Invoice not found" });
         }
 
-        if (invoice.sellerId.toString() !== req.user.userId) {
+        if (invoice.sellerId.toString() !== req.user.id) {
             return res.status(403).json({ success: false, message: "Access denied. Only the seller can update payment status." });
         }
 

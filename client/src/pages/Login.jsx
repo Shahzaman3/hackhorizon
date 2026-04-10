@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 
 export default function Login() {
@@ -13,12 +13,19 @@ export default function Login() {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate(`/${user.role}/dashboard`, { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleGoogleLogin = () => {
     setError('');
     setIsGoogleLoading(true);
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const apiBaseUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
     window.location.href = `${apiBaseUrl}/auth/google`;
   };
 
@@ -28,9 +35,8 @@ export default function Login() {
     setError('');
     try {
       const res = await api.post('/auth/login', { email, password });
-      const { user, token } = res.data.data;
-      login(user, token);
-      navigate(`/${user.role}/dashboard`, { replace: true });
+      const { user } = res.data.data;
+      login(user);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {

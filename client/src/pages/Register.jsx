@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Register() {
   const [activeRole, setActiveRole] = useState('seller');
@@ -15,12 +15,19 @@ export default function Register() {
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate(`/${user.role}/dashboard`, { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleGoogleSignup = () => {
     setError('');
     setIsGoogleLoading(true);
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const apiBaseUrl = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
     window.location.href = `${apiBaseUrl}/auth/google`;
   };
 
@@ -30,9 +37,8 @@ export default function Register() {
     setError('');
     try {
       const res = await api.post('/auth/register', { name, email, password, role: activeRole, gstin });
-      const { user, token } = res.data.data;
-      login(user, token);
-      navigate(`/${user.role}/dashboard`, { replace: true });
+      const { user } = res.data.data;
+      login(user);
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to create account');
     } finally {
