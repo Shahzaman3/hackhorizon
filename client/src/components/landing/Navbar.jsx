@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState('');
+  const { user, token } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -66,19 +68,31 @@ export default function Navbar() {
 
         {/* Right Actions (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            to="/login"
-            className="text-sm font-semibold text-[#4D6357] hover:text-[#0A2518] px-4 py-2 rounded-lg transition-colors duration-200"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="text-sm font-bold text-[#FDFBF7] bg-[#047857] hover:bg-[#065F46] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#047857]/20 hover:shadow-[#047857]/40 hover:scale-[1.02]"
-            style={{ fontFamily: 'Plus Jakarta Sans' }}
-          >
-            Get Started
-          </Link>
+          {token && user ? (
+            <Link
+              to={`/${user.role === 'buyer' ? 'buyer' : 'seller'}/dashboard`}
+              className="text-sm font-bold text-[#FDFBF7] bg-[#047857] hover:bg-[#065F46] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#047857]/20 hover:shadow-[#047857]/40 hover:scale-[1.02]"
+              style={{ fontFamily: 'Plus Jakarta Sans' }}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-sm font-semibold text-[#4D6357] hover:text-[#0A2518] px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="text-sm font-bold text-[#FDFBF7] bg-[#047857] hover:bg-[#065F46] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#047857]/20 hover:shadow-[#047857]/40 hover:scale-[1.02]"
+                style={{ fontFamily: 'Plus Jakarta Sans' }}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Hamburger */}
@@ -119,20 +133,32 @@ export default function Navbar() {
               </a>
             ))}
             <div className="flex flex-col w-full gap-3 mt-2 border-t border-[#0A2518]/5 pt-6">
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-3 rounded-xl border border-[#0A2518]/10 text-sm font-semibold text-[#0A2518] hover:bg-[#0A2518]/5 transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-3 rounded-xl bg-[#047857] text-[#FDFBF7] text-sm font-bold hover:bg-[#065F46] transition-colors shadow-lg shadow-[#047857]/20"
-              >
-                Get Started
-              </Link>
+              {token && user ? (
+                <Link
+                  to={`/${user.role === 'buyer' ? 'buyer' : 'seller'}/dashboard`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-3 rounded-xl bg-[#047857] text-[#FDFBF7] text-sm font-bold hover:bg-[#065F46] transition-colors shadow-lg shadow-[#047857]/20"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 rounded-xl border border-[#0A2518]/10 text-sm font-semibold text-[#0A2518] hover:bg-[#0A2518]/5 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 rounded-xl bg-[#047857] text-[#FDFBF7] text-sm font-bold hover:bg-[#065F46] transition-colors shadow-lg shadow-[#047857]/20"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
