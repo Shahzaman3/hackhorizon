@@ -70,12 +70,12 @@ export default function BuyerDashboard() {
 
   if (loading) {
     return (
-      <div className="flex bg-[#0a0f0d] h-screen overflow-hidden">
+      <div className="flex bg-[#FDFBF7] h-screen overflow-hidden">
         <Sidebar role="buyer" />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <span className="w-10 h-10 border-2 border-[#4ade80]/20 border-t-[#4ade80] rounded-full spin" />
-            <span className="text-sm text-[#3d5945] font-medium">Loading dashboard...</span>
+            <span className="w-10 h-10 border-2 border-[#047857]/20 border-t-[#047857] rounded-full spin" />
+            <span className="text-sm text-[#728279] font-medium">Loading dashboard...</span>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function BuyerDashboard() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0a0f0d] relative">
+    <div className="flex h-screen overflow-hidden bg-[#FDFBF7] relative">
       <Sidebar role="buyer" isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {mobileMenuOpen && (
@@ -100,8 +100,8 @@ export default function BuyerDashboard() {
 
           {/* Page header */}
           <div>
-            <h2 className="text-lg font-bold text-white" style={{ fontFamily: 'Plus Jakarta Sans' }}>Dashboard</h2>
-            <p className="text-xs text-[#3d5945] mt-0.5">Review and manage your received invoices</p>
+            <h2 className="text-lg font-bold text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Dashboard</h2>
+            <p className="text-xs text-[#728279] mt-0.5">Review and manage your received invoices</p>
           </div>
 
           {/* Stat Cards */}
@@ -125,8 +125,8 @@ export default function BuyerDashboard() {
             </div>
 
             {/* GST Summary */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 flex flex-col">
-              <h3 className="font-bold text-base text-white mb-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>My GST Payable</h3>
+            <div className="bg-[#FFFFFF] border border-[#E5E2D9] rounded-2xl p-6 flex flex-col">
+              <h3 className="font-bold text-base text-[#0A2518] mb-5" style={{ fontFamily: 'Plus Jakarta Sans' }}>My GST Payable</h3>
 
               <div className="flex flex-col gap-4 mb-5">
                 {[
@@ -135,13 +135,13 @@ export default function BuyerDashboard() {
                   { label: 'IGST', value: gstData?.igst || 0 },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex justify-between items-center">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#3d5945]">{label}</span>
-                    <span className="font-bold text-sm text-white">₹{fmtCurrency(value)}</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#728279]">{label}</span>
+                    <span className="font-bold text-sm text-[#0A2518]">₹{fmtCurrency(value)}</span>
                   </div>
                 ))}
-                <div className="border-t border-[#243124] pt-4 flex justify-between items-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#6b8f76]">Total GST</span>
-                  <span className="font-bold text-lg text-[#4ade80]">
+                <div className="border-t border-[#E5E2D9] pt-4 flex justify-between items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#4D6357]">Total GST</span>
+                  <span className="font-bold text-lg text-[#047857]">
                     ₹{fmtCurrency((gstData?.cgst || 0) + (gstData?.sgst || 0) + (gstData?.igst || 0))}
                   </span>
                 </div>
@@ -153,13 +153,13 @@ export default function BuyerDashboard() {
                     <BarChart data={gstData.history}>
                       <Tooltip
                         cursor={{ fill: 'rgba(74,222,128,0.04)' }}
-                        contentStyle={{ background: '#192319', border: '1px solid #243124', borderRadius: '10px', fontSize: '12px', color: '#e8f5ec' }}
+                        contentStyle={{ background: '#F4F1EA', border: '1px solid #E5E2D9', borderRadius: '10px', fontSize: '12px', color: '#0A2518' }}
                       />
-                      <Bar dataKey="total" fill="#4ade80" radius={[4, 4, 0, 0]} opacity={0.8} />
+                      <Bar dataKey="total" fill="#047857" radius={[4, 4, 0, 0]} opacity={0.8} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center text-xs text-[#3d5945] bg-[#0f1812] rounded-xl border border-[#243124] font-medium">
+                  <div className="h-full w-full flex items-center justify-center text-xs text-[#728279] bg-[#0f1812] rounded-xl border border-[#E5E2D9] font-medium">
                     No GST history yet
                   </div>
                 )}
@@ -171,15 +171,15 @@ export default function BuyerDashboard() {
           <div className="flex gap-5 flex-wrap lg:flex-nowrap items-start">
 
             {/* Request Form */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 w-full lg:max-w-sm flex-shrink-0">
-              <h3 className="font-bold text-base text-white mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+            <div className="bg-[#FFFFFF] border border-[#E5E2D9] rounded-2xl p-6 w-full lg:max-w-sm flex-shrink-0">
+              <h3 className="font-bold text-base text-[#0A2518] mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
                 Request a Missing Invoice
               </h3>
-              <p className="text-xs text-[#3d5945] mb-6">Ask a seller to upload an invoice you're missing</p>
+              <p className="text-xs text-[#728279] mb-6">Ask a seller to upload an invoice you're missing</p>
 
               <form onSubmit={handleRequestSubmit} className="flex flex-col gap-4">
                 <div>
-                  <label className="block text-[11px] font-bold text-[#6b8f76] uppercase tracking-[0.12em] mb-2">Seller GSTIN</label>
+                  <label className="block text-[11px] font-bold text-[#4D6357] uppercase tracking-[0.12em] mb-2">Seller GSTIN</label>
                   <input
                     type="text"
                     required
@@ -187,23 +187,23 @@ export default function BuyerDashboard() {
                     value={reqSellerGstin}
                     onChange={(e) => setReqSellerGstin(e.target.value)}
                     placeholder="27AAPFU0939F1ZV"
-                    className="w-full bg-[#0f1812] border border-[#243124] rounded-xl px-4 py-3 text-sm text-white font-mono uppercase placeholder-[#3d5945] outline-none focus:border-[#4ade80]/40 focus:ring-2 focus:ring-[#4ade80]/8 transition-all"
+                    className="w-full bg-[#0f1812] border border-[#E5E2D9] rounded-xl px-4 py-3 text-sm text-[#0A2518] font-mono uppercase placeholder-[#728279] outline-none focus:border-[#047857]/40 focus:ring-2 focus:ring-[#047857]/8 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-[#6b8f76] uppercase tracking-[0.12em] mb-2">Note <span className="normal-case text-[#3d5945] font-medium">(optional)</span></label>
+                  <label className="block text-[11px] font-bold text-[#4D6357] uppercase tracking-[0.12em] mb-2">Note <span className="normal-case text-[#728279] font-medium">(optional)</span></label>
                   <textarea
                     rows={3}
                     value={reqNote}
                     onChange={(e) => setReqNote(e.target.value)}
                     placeholder="e.g. Invoice for March order of 500 units"
-                    className="w-full bg-[#0f1812] border border-[#243124] rounded-xl px-4 py-3 text-sm text-white placeholder-[#3d5945] outline-none focus:border-[#4ade80]/40 focus:ring-2 focus:ring-[#4ade80]/8 transition-all resize-none font-medium"
+                    className="w-full bg-[#0f1812] border border-[#E5E2D9] rounded-xl px-4 py-3 text-sm text-[#0A2518] placeholder-[#728279] outline-none focus:border-[#047857]/40 focus:ring-2 focus:ring-[#047857]/8 transition-all resize-none font-medium"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={reqLoading}
-                  className="w-full bg-[#4ade80] hover:bg-[#86efac] text-[#0a0f0d] rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-[#4ade80]/20 disabled:opacity-50"
+                  className="w-full bg-[#047857] hover:bg-[#065F46] text-[#FDFBF7] rounded-xl py-3 text-sm font-bold transition-all shadow-lg shadow-[#047857]/20 disabled:opacity-50"
                   style={{ fontFamily: 'Plus Jakarta Sans' }}
                 >
                   {reqLoading ? 'Sending...' : 'Send Request'}
@@ -212,20 +212,20 @@ export default function BuyerDashboard() {
             </div>
 
             {/* Requests List */}
-            <div className="flex-1 bg-[#111a15] border border-[#243124] rounded-2xl p-6 min-h-[300px]">
-              <h4 className="text-[11px] font-bold text-[#3d5945] uppercase tracking-[0.14em] mb-5">Your Requests</h4>
+            <div className="flex-1 bg-[#FFFFFF] border border-[#E5E2D9] rounded-2xl p-6 min-h-[300px]">
+              <h4 className="text-[11px] font-bold text-[#728279] uppercase tracking-[0.14em] mb-5">Your Requests</h4>
 
               {myRequests.length > 0 ? (
-                <div className="flex flex-col divide-y divide-[#1a2a1f]">
+                <div className="flex flex-col divide-y divide-[#E5E2D9]">
                   {myRequests.map((req) => (
                     <div key={req._id || req.id} className="flex items-start gap-4 py-4 group">
                       <div className="flex flex-col flex-1 min-w-0">
-                        <span className="font-mono text-sm font-bold text-white tracking-wide">{req.sellerGstin}</span>
-                        <span className="text-xs text-[#6b8f76] mt-1 italic truncate">"{req.note || 'No additional note provided'}"</span>
+                        <span className="font-mono text-sm font-bold text-[#0A2518] tracking-wide">{req.sellerGstin}</span>
+                        <span className="text-xs text-[#4D6357] mt-1 italic truncate">"{req.note || 'No additional note provided'}"</span>
                       </div>
                       <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                         <StatusBadge status={req.status} />
-                        <span className="text-[10px] uppercase font-semibold tracking-wider text-[#3d5945]">
+                        <span className="text-[10px] uppercase font-semibold tracking-wider text-[#728279]">
                           {formatDate(req.date || req.createdAt)}
                         </span>
                       </div>
@@ -234,12 +234,12 @@ export default function BuyerDashboard() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <div className="w-12 h-12 rounded-2xl bg-[#192319] border border-[#243124] flex items-center justify-center mb-3">
-                    <svg className="w-6 h-6 text-[#3d5945]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F4F1EA] border border-[#E5E2D9] flex items-center justify-center mb-3">
+                    <svg className="w-6 h-6 text-[#728279]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-semibold text-[#3d5945]">No requests sent yet</span>
+                  <span className="text-sm font-semibold text-[#728279]">No requests sent yet</span>
                 </div>
               )}
             </div>
