@@ -4,19 +4,19 @@
 /* ─── Design Tokens ─────────────────────────────────────── */
 @theme {
   /* Brand – deep forest-ink palette */
-  --color-primary:    #4ade80;   /* emerald accent */
+  --color-primary:    #047857;   /* emerald accent */
   --color-primary-dim:#22c55e;   /* slightly deeper */
-  --color-dark:       #0a0f0d;   /* near-black base */
-  --color-surface:    #111a15;   /* card bg */
-  --color-surface-2:  #192319;   /* elevated card */
-  --color-border:     #243124;   /* subtle borders */
-  --color-border-2:   #2e4030;   /* stronger border */
-  --color-text:       #e8f5ec;   /* body text */
-  --color-muted:      #6b8f76;   /* secondary text */
-  --color-muted-2:    #3d5945;   /* dimmer text */
+  --color-dark:       #FDFBF7;   /* near-black base */
+  --color-surface:    #FFFFFF;   /* card bg */
+  --color-surface-2:  #F4F1EA;   /* elevated card */
+  --color-border:     #E5E2D9;   /* subtle borders */
+  --color-border-2:   #D1CFC2;   /* stronger border */
+  --color-text:       #0A2518;   /* body text */
+  --color-muted:      #4D6357;   /* secondary text */
+  --color-muted-2:    #728279;   /* dimmer text */
 
   /* Semantic status */
-  --color-success:    #4ade80;
+  --color-success:    #047857;
   --color-warning:    #facc15;
   --color-danger:     #f87171;
   --color-info:       #60a5fa;
@@ -43,8 +43,8 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: #0a0f0d;
-  color: #e8f5ec;
+  background-color: #FDFBF7;
+  color: #0A2518;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -55,9 +55,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #111a15; }
-::-webkit-scrollbar-thumb { background: #2e4030; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+::-webkit-scrollbar-track { background: #FFFFFF; }
+::-webkit-scrollbar-thumb { background: #D1CFC2; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #076349; }
 
 /* ─── Global Keyframes ───────────────────────────────────── */
 @keyframes fadeUp {
@@ -94,10 +94,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* glass card */
 .glass {
-  background: rgba(17, 26, 21, 0.7);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(4, 120, 87, 0.1);
 }
 
 /* glow text */
@@ -107,7 +107,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #4ade80 0%, #86efac 60%, #ffffff 100%);
+  background: linear-gradient(135deg, #047857 0%, #065F46 60%, #0A2518 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -116,7 +116,7 @@ h1, h2, h3, h4, h5, h6 {
 /* shimmer button effect */
 .btn-shimmer {
   background: linear-gradient(90deg,
-    #4ade80 0%, #86efac 40%, #ffffff 50%, #86efac 60%, #4ade80 100%);
+    #047857 0%, #065F46 40%, #0A2518 50%, #065F46 60%, #047857 100%);
   background-size: 200% auto;
   animation: shimmer 3s linear infinite;
 }
@@ -132,8 +132,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* dark card */
 .card-dark {
-  background: #111a15;
-  border: 1px solid #243124;
+  background: #FFFFFF;
+  border: 1px solid #E5E2D9;
   border-radius: 1.25rem;
 }
 
@@ -144,11 +144,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-dark {
-  background: #0a0f0d;
-  color: #e8f5ec;
+  background: #FDFBF7;
+  color: #0A2518;
 }
 
 /* ─── Custom scrollbar for panels ───────────────────────── */
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #2e4030; border-radius: 9999px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #D1CFC2; border-radius: 9999px; }

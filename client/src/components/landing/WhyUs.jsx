@@ -1,118 +1,87 @@
 export default function WhyUs() {
   const points = [
     {
-      icon: (
-        <svg className="w-5 h-5 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
+      num: '01',
       title: 'Real-time collaboration',
       desc: 'Sellers and buyers work on the same invoice simultaneously. No version confusion, no email threads.'
     },
     {
-      icon: (
-        <svg className="w-5 h-5 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      ),
+      num: '02',
       title: 'Built for Indian GST',
       desc: 'CGST, SGST, IGST handled automatically. No manual calculations, no errors.'
     },
     {
-      icon: (
-        <svg className="w-5 h-5 text-[#4ade80]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-      ),
+      num: '03',
       title: 'Full audit trail',
       desc: 'Every status change, every action — logged, timestamped, and searchable.'
     }
   ];
 
   const stats = [
-    { val: '10,000+', label: 'Invoices processed', pct: 85 },
-    { val: '98%',     label: 'Acceptance rate',   pct: 98 },
-    { val: '< 2min',  label: 'Avg. validation',   pct: 20 },
-    { val: 'Zero',    label: 'GST calc errors',   pct: 100 }
+    { val: '10,000+', label: 'Invoices Processed' },
+    { val: '98%',     label: 'Acceptance Rate'   },
+    { val: '< 2min',  label: 'Avg. Validation'   },
+    { val: 'Zero',    label: 'GST Calc Errors'   }
   ];
 
-  const badges = ['256-bit SSL', 'GSTN Compliant', 'ISO Ready', 'Data Encrypted'];
-
   return (
-    <section id="whyus" className="bg-[#0a0f0d] py-28 px-6 md:px-10 relative overflow-hidden">
-      {/* glow */}
-      <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-[#4ade80]/4 rounded-full blur-[130px] pointer-events-none" />
+    <section id="whyus" className="bg-[#FDFBF7] relative overflow-hidden" style={{ fontFamily: 'Plus Jakarta Sans' }}>
 
-      <div className="max-w-4xl mx-auto relative flex flex-col items-center text-center">
-        <div className="grid lg:grid-cols-1 gap-16 items-center">
+      {/* subtle top border */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#047857]/20 to-transparent" />
 
-          {/* Left Column */}
-          <div className="flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 border border-[#4ade80]/20 bg-[#4ade80]/8 text-[#4ade80] rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+      <div className="max-w-6xl mx-auto px-8 sm:px-12 md:px-16 py-32">
+
+        {/* ── Header Row ── */}
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-24">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 border border-[#047857]/20 bg-[#047857]/8 text-[#047857] rounded-full px-4 py-1.5 text-xs font-semibold tracking-wide mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#047857]" />
               Why InvoiceSync
             </div>
-            <h2
-              className="text-[clamp(1.8rem,4vw,2.75rem)] font-extrabold text-white leading-tight mb-5"
-              style={{ fontFamily: 'Plus Jakarta Sans' }}
-            >
+            <h2 className="text-[clamp(2rem,4.5vw,3.25rem)] font-extrabold text-[#0A2518] leading-[1.1] tracking-tight">
               Stop chasing invoices.{' '}
-              <br className="hidden sm:block" />
-              <span className="gradient-text">Start closing deals.</span>
+              <span className="text-[#047857]">Start closing deals.</span>
             </h2>
-            <p className="text-[#6b8f76] text-base leading-relaxed max-w-2xl mb-12">
-              Most invoice tools are built for accountants. InvoiceSync is built for the people who actually send and receive invoices every day.
-            </p>
-
-            <div className="flex flex-col gap-7 items-center max-w-xl mx-auto">
-              {points.map((pt, i) => (
-                <div key={i} className="flex flex-col sm:flex-row gap-4 items-center sm:items-start group text-center sm:text-left">
-                  <div className="w-10 h-10 rounded-xl bg-[#4ade80]/10 border border-[#4ade80]/15 flex-shrink-0 flex items-center justify-center group-hover:bg-[#4ade80]/20 group-hover:border-[#4ade80]/35 transition-all duration-300">
-                    {pt.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>{pt.title}</h4>
-                    <p className="text-[#6b8f76] text-sm leading-relaxed">{pt.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
+          <p className="text-[#4D6357] text-sm leading-relaxed max-w-xs lg:text-right">
+            Most invoice tools are built for accountants. InvoiceSync is built for the people who actually send and receive invoices every day.
+          </p>
+        </div>
 
-          {/* Right Column */}
-          <div className="flex flex-col">
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {stats.map((st, i) => (
-                <div
-                  key={i}
-                  className="bg-[#111a15] border border-[#243124] rounded-2xl p-6 relative overflow-hidden hover:border-[#4ade80]/30 transition-all duration-300 group"
-                >
-                  <div
-                    className="text-[2.25rem] font-extrabold text-white leading-none mb-2"
-                    style={{ fontFamily: 'Plus Jakarta Sans' }}
-                  >
-                    {st.val}
-                  </div>
-                  <div className="text-xs text-[#6b8f76] font-medium mb-4">{st.label}</div>
+        {/* ── Main Grid ── */}
+        <div className="grid lg:grid-cols-2 gap-6">
 
-                  {/* Progress bar */}
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#243124]" />
-                  <div
-                    className="absolute bottom-0 left-0 h-0.5 bg-[#4ade80]/70 group-hover:bg-[#4ade80] transition-colors duration-300"
-                    style={{ width: `${st.pct}%` }}
-                  />
+          {/* Left: Points */}
+          <div className="flex flex-col gap-0 border border-[#0A2518] rounded-3xl overflow-hidden">
+            {points.map((pt, i) => (
+              <div
+                key={i}
+                className="group flex gap-6 p-8 border-b border-[#0A2518] last:border-b-0 hover:bg-[#FFFFFF] transition-all duration-300 cursor-default"
+              >
+                <span className="text-[11px] font-black text-[#728279] pt-1 tracking-widest shrink-0 group-hover:text-[#047857] transition-colors duration-300">
+                  {pt.num}
+                </span>
+                <div>
+                  <h4 className="text-[#0A2518] font-bold text-base mb-2 group-hover:text-[#047857] transition-colors duration-300">
+                    {pt.title}
+                  </h4>
+                  <p className="text-[#4D6357] text-sm leading-relaxed">{pt.desc}</p>
                 </div>
-              ))}
-            </div>
+                <span className="ml-auto text-[#E5E2D9] group-hover:text-[#047857]/40 transition-all duration-300 self-start text-lg shrink-0">
+                  →
+                </span>
+              </div>
+            ))}
 
-            {/* Trust Strip */}
-            <div className="bg-[#111a15] border border-[#243124] rounded-2xl p-5 w-full flex flex-col items-center">
-              <p className="text-[10px] text-[#3d5945] uppercase tracking-[0.2em] font-bold mb-4">Secured by</p>
-              <div className="flex flex-wrap justify-center gap-2">
-                {badges.map((badge, i) => (
+            {/* Trust strip inside left card */}
+            <div className="p-8 bg-[#FFFFFF]">
+              <p className="text-[10px] text-[#728279] uppercase tracking-[0.22em] font-bold mb-4">Secured by</p>
+              <div className="flex flex-wrap gap-2">
+                {['256-bit SSL', 'GSTN Compliant', 'ISO Ready', 'Data Encrypted'].map((badge, i) => (
                   <span
                     key={i}
-                    className="border border-[#243124] bg-[#192319] hover:border-[#4ade80]/30 hover:bg-[#4ade80]/5 transition-all text-[#6b8f76] hover:text-white rounded-full px-3.5 py-1.5 text-xs font-semibold cursor-default"
+                    className="border border-[#0A2518] text-[#728279] rounded-full px-3.5 py-1.5 text-[11px] font-semibold tracking-wide"
                   >
                     {badge}
                   </span>
@@ -121,8 +90,45 @@ export default function WhyUs() {
             </div>
           </div>
 
+          {/* Right: Stats */}
+          <div className="grid grid-cols-2 gap-6">
+            {stats.map((st, i) => (
+              <div
+                key={i}
+                className="group border border-[#0A2518] rounded-3xl p-8 flex flex-col justify-between hover:border-[#047857]/25 hover:bg-[#FFFFFF] transition-all duration-300 cursor-default relative overflow-hidden"
+              >
+                {/* corner accent */}
+                <div className="absolute top-0 right-0 w-16 h-16 bg-[#047857]/3 rounded-bl-3xl group-hover:bg-[#047857]/8 transition-all duration-300" />
+
+                <div className="text-[#728279] text-[10px] uppercase tracking-[0.2em] font-bold mb-6">
+                  {st.label}
+                </div>
+                <div className="text-[clamp(2rem,4vw,3rem)] font-extrabold text-[#0A2518] leading-none tracking-tight group-hover:text-[#047857] transition-colors duration-500">
+                  {st.val}
+                </div>
+              </div>
+            ))}
+
+            {/* CTA Card */}
+            <div className="col-span-2 bg-[#047857] rounded-3xl p-8 flex items-center justify-between gap-4 group cursor-pointer hover:bg-[#065F46] transition-colors duration-300">
+              <div>
+                <p className="text-[#FDFBF7] font-extrabold text-lg leading-tight mb-1">
+                  Ready to switch?
+                </p>
+                <p className="text-[#ffffff] text-sm font-medium">
+                  Get started free — no credit card needed.
+                </p>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-[#FDFBF7]/10 flex items-center justify-center shrink-0 group-hover:bg-[#FDFBF7]/20 transition-all duration-300">
+                <span className="text-[#FDFBF7] text-xl font-black group-hover:translate-x-0.5 transition-transform duration-200 inline-block">→</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[#047857]/20 to-transparent" />
     </section>
   );
 }

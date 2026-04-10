@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState('');
+  const { user, token } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -22,7 +25,7 @@ export default function Navbar() {
     <nav
       className={`sticky top-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-[#0a0f0d]/90 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/40'
+          ? 'bg-[#FDFBF7]/90 backdrop-blur-xl border-b border-[#0A2518]/5 shadow-lg shadow-black/40'
           : 'bg-transparent'
       }`}
     >
@@ -30,10 +33,10 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
-          <div className="w-8 h-8 bg-[#4ade80] rounded-lg flex items-center justify-center font-bold text-[13px] text-[#0a0f0d] shadow-lg shadow-[#4ade80]/30 group-hover:shadow-[#4ade80]/50 transition-shadow">
+          <div className="w-8 h-8 bg-[#047857] rounded-lg flex items-center justify-center font-bold text-[13px] text-[#FDFBF7] shadow-lg shadow-[#047857]/30 group-hover:shadow-[#047857]/50 transition-shadow">
             IS
           </div>
-          <span className="text-white font-bold text-[17px] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+          <span className="text-[#0A2518] font-bold text-[17px] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
             InvoiceSync
           </span>
         </Link>
@@ -44,34 +47,57 @@ export default function Navbar() {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-[#6b8f76] hover:text-white transition-colors duration-200 hover:translate-y-[-1px]"
-              style={{ display: 'inline-block', transition: 'color 0.2s, transform 0.2s' }}
+              onClick={() => setActiveLink(link.name)}
+              className="relative text-sm font-medium transition-colors duration-200 group py-1"
             >
-              {link.name}
+              <span className={`transition-colors duration-200 ${
+                activeLink === link.name 
+                  ? "text-[#0A2518]" 
+                  : "text-[#4D6357] group-hover:text-[#0A2518]"
+              }`}>
+                {link.name}
+              </span>
+              <span 
+                className={`absolute bottom-0 left-0 h-[2px] bg-[#047857] transition-all duration-300 ${
+                  activeLink === link.name ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}
+              />
             </a>
           ))}
         </div>
 
         {/* Right Actions (Desktop) */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            to="/login"
-            className="text-sm font-semibold text-[#6b8f76] hover:text-white px-4 py-2 rounded-lg transition-colors duration-200"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="text-sm font-bold text-[#0a0f0d] bg-[#4ade80] hover:bg-[#86efac] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#4ade80]/20 hover:shadow-[#4ade80]/40 hover:scale-[1.02]"
-            style={{ fontFamily: 'Plus Jakarta Sans' }}
-          >
-            Get Started
-          </Link>
+          {token && user ? (
+            <Link
+              to={`/${user.role === 'buyer' ? 'buyer' : 'seller'}/dashboard`}
+              className="text-sm font-bold text-[#FDFBF7] bg-[#047857] hover:bg-[#065F46] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#047857]/20 hover:shadow-[#047857]/40 hover:scale-[1.02]"
+              style={{ fontFamily: 'Plus Jakarta Sans' }}
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-sm font-semibold text-[#4D6357] hover:text-[#0A2518] px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="text-sm font-bold text-[#FDFBF7] bg-[#047857] hover:bg-[#065F46] px-5 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-[#047857]/20 hover:shadow-[#047857]/40 hover:scale-[1.02]"
+                style={{ fontFamily: 'Plus Jakarta Sans' }}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Hamburger */}
         <button
-          className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-white/10 text-white hover:bg-white/5 transition-colors"
+          className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-[#0A2518]/10 text-[#0A2518] hover:bg-[#0A2518]/5 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle Navigation"
         >
@@ -89,33 +115,50 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-[70px] left-0 w-full bg-[#0a0f0d]/95 backdrop-blur-xl border-b border-white/5 animate-fade-in">
+        <div className="md:hidden absolute top-[70px] left-0 w-full bg-[#FDFBF7]/95 backdrop-blur-xl border-b border-[#0A2518]/5 animate-fade-in">
           <div className="flex flex-col items-center gap-6 py-8 px-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-medium text-[#6b8f76] hover:text-white transition-colors"
+                onClick={() => {
+                  setActiveLink(link.name);
+                  setMobileMenuOpen(false);
+                }}
+                className={`text-base font-medium transition-colors ${
+                  activeLink === link.name ? 'text-[#047857]' : 'text-[#4D6357] hover:text-[#0A2518]'
+                }`}
               >
                 {link.name}
               </a>
             ))}
-            <div className="flex flex-col w-full gap-3 mt-2 border-t border-white/5 pt-6">
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-3 rounded-xl border border-white/10 text-sm font-semibold text-white hover:bg-white/5 transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-3 rounded-xl bg-[#4ade80] text-[#0a0f0d] text-sm font-bold hover:bg-[#86efac] transition-colors shadow-lg shadow-[#4ade80]/20"
-              >
-                Get Started
-              </Link>
+            <div className="flex flex-col w-full gap-3 mt-2 border-t border-[#0A2518]/5 pt-6">
+              {token && user ? (
+                <Link
+                  to={`/${user.role === 'buyer' ? 'buyer' : 'seller'}/dashboard`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-3 rounded-xl bg-[#047857] text-[#FDFBF7] text-sm font-bold hover:bg-[#065F46] transition-colors shadow-lg shadow-[#047857]/20"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 rounded-xl border border-[#0A2518]/10 text-sm font-semibold text-[#0A2518] hover:bg-[#0A2518]/5 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-3 rounded-xl bg-[#047857] text-[#FDFBF7] text-sm font-bold hover:bg-[#065F46] transition-colors shadow-lg shadow-[#047857]/20"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
