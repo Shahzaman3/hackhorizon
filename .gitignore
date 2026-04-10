@@ -1,0 +1,69 @@
+# ------------------------------
+# 🔐 ENV FILES (NEVER PUSH)
+# ------------------------------
+.env
+.env.*
+client/.env
+server/.env
+
+# ------------------------------
+# 📦 NODE MODULES
+# ------------------------------
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# ------------------------------
+# 🏗 BUILD FILES
+# ------------------------------
+dist/
+build/
+client/dist/
+client/build/
+server/dist/
+
+# ------------------------------
+# 🧠 LOG FILES
+# ------------------------------
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------
+# 💻 OS FILES
+# ------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------------
+# 🧪 TEST COVERAGE
+# ------------------------------
+coverage/
+
+# ------------------------------
+# ⚡ VITE / CACHE
+# ------------------------------
+client/.vite/
+.cache/
+
+# ------------------------------
+# 🧾 EDITOR / IDE
+# ------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ------------------------------
+# 🔑 MISC
+# ------------------------------
+*.local
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Temporary nested git backup
+client/.git_client_backup/
