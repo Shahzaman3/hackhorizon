@@ -1,12 +1,26 @@
-// Middleware to check if user is authenticated via session
+const jwt = require('jsonwebtoken');
+
+// Middleware to check if user is authenticated via JWT
 const verifyToken = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        return res.status(401).json({ 
-            success: false, 
-            message: "Not authenticated" 
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: 'Not authenticated'
         });
     }
-    next();
+
+    try {
+        req.user = jwt.verify(token, process.env.JWT_SECRET || 'invoice-sync-secret');
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            success: false,
+            message: 'Invalid or expired token'
+        });
+    }
 };
 
 module.exports = verifyToken;

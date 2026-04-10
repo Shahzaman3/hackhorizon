@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     name: { 
@@ -15,7 +16,9 @@ const userSchema = new mongoose.Schema({
     },
     password: { 
         type: String, 
-        required: true, 
+        required: function requiredPassword() {
+            return !this.googleId;
+        },
         minlength: 6 
     },
     role: { 
@@ -23,9 +26,20 @@ const userSchema = new mongoose.Schema({
         enum: ["seller", "buyer"], 
         required: true 
     },
+    googleId: {
+        type: String,
+        sparse: true,
+        index: true
+    },
+    profilePicture: {
+        type: String
+    },
     gstin: { 
         type: String, 
-        required: true, 
+        required: function requiredGstin() {
+            return !this.googleId;
+        },
+        default: '',
         trim: true, 
         uppercase: true 
     },
@@ -37,7 +51,7 @@ const userSchema = new mongoose.Schema({
 
 // Pre-save hook for password hashing
 userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
+    if (!this.password || !this.isModified('password')) return next();
     
     try {
         const salt = await bcrypt.genSalt(10);

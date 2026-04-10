@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const passport = require('passport');
+require('./config/passport');
 const connectDB = require('./config/db');
 
 // Import routes
@@ -20,6 +22,7 @@ app.use(cors({
     origin: "http://localhost:5173", 
     credentials: true 
 }));
+app.use(passport.initialize());
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
