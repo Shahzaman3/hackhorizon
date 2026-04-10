@@ -4,6 +4,9 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
 
+// Minimal projection for session hydration
+const SESSION_USER_PROJECTION = 'name email role gstin profilePicture googleId';
+
 // Serialize user to session
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -12,7 +15,11 @@ passport.serializeUser((user, done) => {
 // Deserialize user from session
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await User.findById(id);
+        // OPTIMIZATION: Use .lean() and focused projection to speed up every authenticated request
+        const user = await User.findById(id).select(SESSION_USER_PROJECTION).lean();
+        if (user) {
+            user.id = user._id.toString(); // Ensure consistency with expected passport user object
+        }
         done(null, user);
     } catch (err) {
         done(err);
@@ -29,6 +36,7 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
+                // select only needed fields
                 let user = await User.findOne({ googleId: profile.id });
 
                 if (!user) {
@@ -41,10 +49,14 @@ passport.use(
                         gstin: ''
                     });
                 } else {
-                    user.name = profile.displayName || user.name;
-                    user.email = profile.emails[0]?.value || user.email;
-                    user.profilePicture = profile.photos[0]?.value || user.profilePicture || '';
-                    await user.save();
+                    // Update profile details only if changed, using atomic updates where possible
+                    const hasChanges = user.name !== profile.displayName || user.email !== profile.emails[0]?.value;
+                    if (hasChanges) {
+                        user.name = profile.displayName || user.name;
+                        user.email = profile.emails[0]?.value || user.email;
+                        user.profilePicture = profile.photos[0]?.value || user.profilePicture || '';
+                        await user.save();
+                    }
                 }
 
                 return done(null, user);

@@ -2,38 +2,47 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
+const helmet = require('helmet');
 const session = require('express-session');
 const passport = require('passport');
 const connectDB = require('./config/db');
 
 require('./config/passport');
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const invoiceRoutes = require('./routes/invoices');
-const dashboardRoutes = require('./routes/dashboard');
-const requestRoutes = require('./routes/requests');
-
 // Connect to Database
 connectDB();
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(cors({ 
-    origin: process.env.CLIENT_URL || "http://localhost:5173", 
-    credentials: true 
+// OPTIMIZATION: Compression reduces JSON payload size by 70-80%
+app.use(compression());
+
+// SECURITY & PERFORMANCE: Helmet sets secure headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Set to false if using external CDNs extensively or during rapid dev
+    crossOriginEmbedderPolicy: false
 }));
 
+app.use(express.json({ limit: '1mb' }));
+app.use(cors({ 
+    origin: process.env.CLIENT_URL || "http://localhost:5173", 
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// OPTIMIZATION: Extended cookie maxAge to 7 days for a smoother 'persistent' user experience
 app.use(session({
     secret: process.env.SESSION_SECRET || 'invoicesync-session-secret',
     resave: false,
     saveUninitialized: false,
+    name: 'invoicesync.sid',
     cookie: {
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
+        sameSite: 'lax'
     }
 }));
 
@@ -47,26 +56,28 @@ app.use('/api/requests', require('./routes/requests'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/notifications', require('./routes/notifications'));
 
-// Root route
-app.get('/', (req, res) => {
-    res.json({ success: true, message: "InvoiceSync API running" });
-});
+// Simple profiling middleware for development (can be removed in production)
+if (process.env.NODE_ENV !== 'production') {
+    app.use((req, res, next) => {
+        const start = Date.now();
+        res.on('finish', () => {
+            const duration = Date.now() - start;
+            if (duration > 500) {
+                console.warn(`[PERF WARNING] ${req.method} ${req.originalUrl} took ${duration}ms`);
+            }
+        });
+        next();
+    });
+}
 
-// 404 Handler
-app.use((req, res) => {
-    res.status(404).json({ success: false, message: "Route not found" });
-});
+app.get('/', (req, res) => res.json({ success: true, message: "InvoiceSync API optimized" }));
 
-// Global Error Handler
+app.use((req, res) => res.status(404).json({ success: false, message: "Route not found" }));
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ 
-        success: false, 
-        message: err.message || "Internal server error" 
-    });
+    res.status(500).json({ success: false, message: err.message || "Internal server error" });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Optimized server running on port ${PORT}`));

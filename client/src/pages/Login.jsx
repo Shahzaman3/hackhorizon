@@ -17,7 +17,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate(`/${user.role}/dashboard`, { replace: true });
+      navigate(`/${user.role}/overview`, { replace: true });
     }
   }, [user, navigate]);
 
