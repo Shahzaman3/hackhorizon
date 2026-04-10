@@ -67,3 +67,15 @@ server/node_modules/
 
 # Temporary nested git backup
 client/.git_client_backup/
+
+# ------------------------------
+# ⛓ BLOCKCHAIN / HARDHAT
+# ------------------------------
+blockchain/node_modules/
+blockchain/artifacts/
+blockchain/cache/
+blockchain/.env
+blockchain/coverage/
+blockchain/coverage.json
+blockchain/typechain/
+blockchain/typechain-types/
