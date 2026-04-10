@@ -17,9 +17,7 @@ export default function Footer() {
         {/* Brand — always full width, centered */}
         <div className="flex flex-col items-center mb-12 lg:hidden">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-8 h-8 bg-[#047857] rounded-lg flex items-center justify-center font-bold text-[13px] text-[#FDFBF7] shadow-lg shadow-[#047857]/30">
-              IS
-            </div>
+            <img src="/logo.png" alt="InvoiceSync logo" className="w-14 h-14 object-contain" />
             <span className="text-[#0A2518] font-bold text-[17px] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
               InvoiceSync
             </span>
@@ -35,9 +33,7 @@ export default function Footer() {
           {/* Col 1 — Brand (desktop only) */}
           <div className="hidden lg:flex flex-col items-center">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 bg-[#047857] rounded-lg flex items-center justify-center font-bold text-[13px] text-[#FDFBF7] shadow-lg shadow-[#047857]/30">
-                IS
-              </div>
+              <img src="/logo.png" alt="InvoiceSync logo" className="w-14 h-14 object-contain" />
               <span className="text-[#0A2518] font-bold text-[17px] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
                 InvoiceSync
               </span>

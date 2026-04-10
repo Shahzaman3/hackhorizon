@@ -21,6 +21,10 @@ export default function Login() {
     }
   }, [user, navigate]);
 
+  const handleBack = () => {
+    navigate('/');
+  };
+
   const handleGoogleLogin = () => {
     setError('');
     setIsGoogleLoading(true);
@@ -58,11 +62,21 @@ export default function Login() {
       <div className="w-full max-w-[420px] relative z-10 flex flex-col items-center">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10">
-          <div className="w-9 h-9 bg-[#047857] rounded-xl flex items-center justify-center font-bold text-[14px] text-[#FDFBF7] shadow-lg shadow-[#047857]/30">IS</div>
+          <img src="/logo.png" alt="InvoiceSync logo" className="w-16 h-16 object-contain" />
           <span className="text-[#0A2518] font-bold text-xl tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>InvoiceSync</span>
         </div>
 
         <div className="w-full bg-[#FFFFFF]/80 backdrop-blur-xl border border-[#E5E2D9] rounded-[2rem] p-8 shadow-2xl flex flex-col text-center">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="self-start mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[#4D6357] hover:text-[#0A2518] transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
 
           {/* Role Toggle */}
           <div className="flex w-full bg-[#FFFFFF] rounded-2xl p-1 mb-8 border border-[#E5E2D9]">

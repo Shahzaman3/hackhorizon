@@ -72,7 +72,7 @@ export default function Register() {
       <div className="w-full max-w-[420px] relative z-10 flex flex-col">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-10">
-          <div className="w-9 h-9 bg-[#047857] rounded-xl flex items-center justify-center font-bold text-[14px] text-[#FDFBF7] shadow-lg shadow-[#047857]/30">IS</div>
+          <img src="/logo.png" alt="InvoiceSync logo" className="w-16 h-16 object-contain" />
           <span className="text-[#0A2518] font-bold text-xl tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>InvoiceSync</span>
         </div>
 
