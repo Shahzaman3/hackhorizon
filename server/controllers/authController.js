@@ -82,9 +82,19 @@ exports.updateGstin = async (req, res, next) => {
 exports.register = async (req, res, next) => {
     try {
         const { name, email: rawEmail, password, role, gstin } = req.body;
-        const email = rawEmail?.trim().toLowerCase();
         
-        // OPTIMIZATION: select only _id to check existence
+        // Validate inputs
+        if (!name || !rawEmail || !password || !role) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        const email = rawEmail.trim().toLowerCase();
+        
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Email cannot be empty" });
+        }
+
+        // Check if user exists (case-insensitive)
         const existing = await User.findOne({ email }).select('_id').lean();
         if (existing) {
             return res.status(400).json({ success: false, message: "User already exists" });
@@ -94,11 +104,11 @@ exports.register = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = await User.create({
-            name,
+            name: name.trim(),
             email,
             password: hashedPassword,
             role,
-            gstin
+            gstin: (gstin || '').trim().toUpperCase()
         });
 
         req.login(user, (err) => {
@@ -119,6 +129,10 @@ exports.register = async (req, res, next) => {
             });
         });
     } catch (err) {
+        // Handle MongoDB duplicate key error
+        if (err.code === 11000 && err.keyPattern?.email) {
+            return res.status(400).json({ success: false, message: "User already exists" });
+        }
         next(err);
     }
 };
@@ -127,7 +141,12 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
         const { email: rawEmail, password } = req.body;
-        const email = rawEmail?.trim().toLowerCase();
+        
+        if (!rawEmail || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required" });
+        }
+
+        const email = rawEmail.trim().toLowerCase();
         
         // Select only needed fields for credential check
         const user = await User.findOne({ email }).select('+password');
