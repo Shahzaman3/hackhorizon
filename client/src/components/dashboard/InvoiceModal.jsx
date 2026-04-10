@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import StatusBadge from './StatusBadge';
+import BlockchainBadge from './BlockchainBadge';
 import api from '../../api/axios';
 
 export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefresh }) {
@@ -80,6 +81,7 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <BlockchainBadge status={invoice.blockchainStatus} />
             <StatusBadge status={invoice.status} />
             <button
               onClick={onClose}

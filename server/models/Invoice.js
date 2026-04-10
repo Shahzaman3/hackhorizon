@@ -54,6 +54,15 @@ const invoiceSchema = new mongoose.Schema({
     createdAt: { 
         type: Date, 
         default: Date.now 
+    },
+    hash: {
+        type: String,
+        default: null
+    },
+    blockchainStatus: {
+        type: String,
+        enum: ["pending", "confirmed", "failed"],
+        default: "pending"
     }
 }, {
     toJSON: { virtuals: true },

@@ -2,6 +2,8 @@ const Invoice = require('../models/Invoice');
 const AuditLog = require('../models/AuditLog');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
+const { generateHash } = require('../utils/hash');
+const { storeHash } = require('../utils/blockchain');
 
 exports.createInvoice = async (req, res, next) => {
     try {
@@ -13,11 +15,28 @@ exports.createInvoice = async (req, res, next) => {
 
         const exactSellerGstin = sellerGstin || req.user.gstin;
 
+        // 1. Duplicate Invoice Number Check
         const duplicate = await Invoice.findOne({ invoiceNumber });
         if (duplicate) {
             return res.status(400).json({ success: false, message: "Invoice number already exists" });
         }
 
+        // 2. Hash Generation (Consistency)
+        const invoiceHash = generateHash({
+            invoiceNumber,
+            sellerGstin: exactSellerGstin,
+            buyerGstin,
+            amount: Number(amount),
+            date,
+        });
+
+        // 3. Prevent Hash Re-store
+        const existingHash = await Invoice.findOne({ hash: invoiceHash });
+        if (existingHash) {
+            return res.status(409).json({ success: false, message: "Duplicate hash! This exact invoice data already exists on the ledger." });
+        }
+
+        // 4. Save Invoice with Pending Status
         const invoice = await Invoice.create({
             invoiceNumber,
             sellerId: req.user.id,
@@ -26,13 +45,29 @@ exports.createInvoice = async (req, res, next) => {
             amount,
             tax,
             date,
+            hash: invoiceHash,
+            blockchainStatus: "pending",
             statusHistory: [{
                 status: "pending",
                 changedBy: req.user.id,
                 note: "Invoice created"
             }]
         });
+        
+        // 5. Asynchronous Blockchain Storage (Wallet strictly handled on backend)
+        storeHash(invoiceHash).then(async (receipt) => {
+            if (receipt && receipt.status === 1) {
+                invoice.blockchainStatus = "confirmed";
+                await invoice.save();
+                console.log(`[BLOCKCHAIN] Hash ${invoiceHash} successfully secured on-chain.`);
+            }
+        }).catch(async (err) => {
+            console.error(`[BLOCKCHAIN] Failed to sync ${invoiceHash}`, err);
+            invoice.blockchainStatus = "failed";
+            await invoice.save();
+        });
 
+        // 6. Asynchronous Logging and Notification
         await AuditLog.create({
             userId: req.user.id,
             action: 'Created Invoice',
@@ -51,7 +86,8 @@ exports.createInvoice = async (req, res, next) => {
                 type: 'info'
             });
         }
-
+        
+        // Return standard 201 immediately (No UI Freeze)
         res.status(201).json({ success: true, data: invoice });
     } catch (err) {
         next(err);

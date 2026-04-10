@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import StatusBadge from './StatusBadge';
+import BlockchainBadge from './BlockchainBadge';
 import api from '../../api/axios';
 
 export default function InvoiceTable({ title = "Invoices", invoices = [], role = "seller", onRowClick, onRefresh }) {
@@ -63,8 +64,8 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
   };
 
   const columns = role === 'seller'
-    ? ['Identifier', 'Recipient', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Settlement', 'Action']
-    : ['Identifier', 'Issuer', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Action'];
+    ? ['Identifier', 'Recipient', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Integrity', 'Settlement', 'Action']
+    : ['Identifier', 'Issuer', 'Gross Amount', 'Tax Portion', 'Issuance', 'Lifecycle', 'Integrity', 'Action'];
 
   const filterBtn = (f) => (
     <button
@@ -130,6 +131,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                       {role === 'seller' ? (
                         <>
                           <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
                           <td className="px-8 py-5.5">
                             <button
                               onClick={(e) => handlePaymentToggle(inv, e)}
@@ -151,6 +153,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                       ) : (
                         <>
                           <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
                           <td className="px-8 py-5.5" onClick={(e) => e.stopPropagation()}>
                             {inv.status?.toLowerCase() === 'pending' ? (
                               <div className="flex gap-2">
