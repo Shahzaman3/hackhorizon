@@ -7,20 +7,24 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
   const [loading, setLoading] = useState(false);
   const [inlineAction, setInlineAction] = useState(null);
   const [actionNote, setActionNote] = useState('');
+  const [error, setError] = useState('');
 
   if (!invoice) return null;
 
   const totalTax = (invoice.tax?.cgst || 0) + (invoice.tax?.sgst || 0) + (invoice.tax?.igst || 0);
 
   const handleAction = async (actionType) => {
+    setError('');
+    const invId = invoice._id || invoice.id;
     if (actionType === 'accepted') {
       setLoading(true);
       try {
-        await api.patch(`/invoices/${invoice.id || invoice._id}/status`, { status: "accepted", note: "" });
+        await api.patch(`/invoices/${invId}/status`, { status: "accepted", note: "" });
         if (onRefresh) onRefresh();
         onClose();
       } catch (e) {
         console.error(e);
+        setError(e?.response?.data?.message || 'Action failed. Counterparty authority issue.');
       } finally {
         setLoading(false);
       }
@@ -35,26 +39,32 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
   };
 
   const submitAction = async () => {
+    setError('');
     setLoading(true);
+    const invId = invoice._id || invoice.id;
     try {
-      await api.patch(`/invoices/${invoice.id || invoice._id}/status`, { status: inlineAction, note: actionNote });
+      await api.patch(`/invoices/${invId}/status`, { status: inlineAction, note: actionNote });
       if (onRefresh) onRefresh();
       onClose();
     } catch (e) {
       console.error(e);
+      setError(e?.response?.data?.message || 'Sync failure. Validation mismatch.');
     } finally {
       setLoading(false);
     }
   };
 
   const markAsPaid = async () => {
+    setError('');
     setLoading(true);
+    const invId = invoice._id || invoice.id;
     try {
-      await api.patch(`/invoices/${invoice.id || invoice._id}/payment`, { paymentStatus: 'paid' });
+      await api.patch(`/invoices/${invId}/payment`, { paymentStatus: 'paid' });
       if (onRefresh) onRefresh();
       onClose();
     } catch (e) {
       console.error(e);
+      setError(e?.response?.data?.message || 'Settlement failed. Unauthorized mutation.');
     } finally {
       setLoading(false);
     }
@@ -188,6 +198,11 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
 
         {/* Footer */}
         <div className="p-8 border-t border-[#E5E2D9] flex-shrink-0 bg-[#F4F1EA]/10">
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl animate-shake">
+               <p className="text-[10px] font-black text-red-600 uppercase tracking-widest text-center">{error}</p>
+            </div>
+          )}
           {role === 'seller' && invoice.paymentStatus !== 'paid' && (
             <button
               onClick={markAsPaid}

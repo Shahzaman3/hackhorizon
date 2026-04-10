@@ -94,12 +94,12 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
       </div>
 
       {/* Table Interface */}
-      <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full text-sm text-left border-collapse">
+      <div className="overflow-x-auto custom-scrollbar w-full">
+        <table className="w-full text-sm text-left border-collapse min-w-[900px]">
           <thead>
             <tr className="bg-[#F4F1EA]/30 border-b border-[#E5E2D9]">
               {columns.map((col) => (
-                <th key={col} className="px-8 py-4 text-[10px] font-black text-[#728279] uppercase tracking-[0.18em] whitespace-nowrap">
+                <th key={col} className="px-5 py-4 text-[10px] font-black text-[#728279] uppercase tracking-[0.18em] whitespace-nowrap">
                   {col}
                 </th>
               ))}
@@ -115,36 +115,36 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                 return (
                   <React.Fragment key={invId}>
                     <tr
-                      className="hover:bg-[#F4F1EA]/20 transition-all cursor-pointer group animate-fade-in"
+                      className="hover:bg-[#F4F1EA]/10 transition-all cursor-pointer group animate-fade-in"
                       onClick={() => onRowClick && onRowClick(inv)}
                     >
-                      <td className="px-8 py-5.5 font-black text-[#0A2518] text-[13px] tracking-tight">{inv.invoiceNumber}</td>
-                      <td className="px-8 py-5.5">
-                        <div className="flex flex-col">
-                           <span className="text-[12px] font-black text-[#047857] uppercase tracking-wider">{role === 'seller' ? inv.buyerGstin : inv.sellerGstin}</span>
+                      <td className="px-5 py-5 font-black text-[#0A2518] text-[12px] tracking-tight whitespace-nowrap">{inv.invoiceNumber}</td>
+                      <td className="px-5 py-5">
+                        <div className="flex flex-col min-w-[120px]">
+                           <span className="text-[11px] font-black text-[#047857] uppercase tracking-wider truncate">{role === 'seller' ? inv.buyerGstin : inv.sellerGstin}</span>
                         </div>
                       </td>
-                      <td className="px-8 py-5.5 font-black text-[#0A2518] text-[14px]">₹{inv.amount?.toLocaleString('en-IN')}</td>
-                      <td className="px-8 py-5.5 text-[12px] font-bold text-[#4D6357]">₹{totalTax?.toLocaleString('en-IN')}</td>
-                      <td className="px-8 py-5.5 text-[11px] text-[#728279] font-bold uppercase tracking-widest">{formatDate(inv.date)}</td>
+                      <td className="px-5 py-5 font-black text-[#0A2518] text-[13px] whitespace-nowrap">₹{inv.amount?.toLocaleString('en-IN')}</td>
+                      <td className="px-5 py-5 text-[11px] font-bold text-[#4D6357] whitespace-nowrap">₹{totalTax?.toLocaleString('en-IN')}</td>
+                      <td className="px-5 py-5 text-[10px] text-[#728279] font-bold uppercase tracking-widest whitespace-nowrap">{formatDate(inv.date)}</td>
 
                       {role === 'seller' ? (
                         <>
-                          <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
-                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
-                          <td className="px-8 py-5.5">
+                          <td className="px-5 py-5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-5 py-5"><BlockchainBadge status={inv.blockchainStatus} /></td>
+                          <td className="px-5 py-5">
                             <button
                               onClick={(e) => handlePaymentToggle(inv, e)}
-                              className={`text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-[0.12em] border transition-all duration-300 ${
+                              className={`text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-[0.12em] border transition-all duration-300 ${
                                 isPaid
                                   ? 'bg-[#047857]/5 text-[#047857] border-[#047857]/20 hover:bg-[#047857] hover:text-white'
                                   : 'bg-[#dc2626]/5 text-[#dc2626] border-[#dc2626]/20 hover:bg-[#dc2626] hover:text-white'
                               }`}
                             >
-                              {isPaid ? 'Settled' : 'Outstanding'}
+                              {isPaid ? 'Settled' : 'Unpaid'}
                             </button>
                           </td>
-                          <td className="px-8 py-5.5 text-right">
+                          <td className="px-5 py-5 text-right">
                              <div className="w-8 h-8 rounded-full bg-[#F4F1EA] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
                              </div>
@@ -152,20 +152,20 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                         </>
                       ) : (
                         <>
-                          <td className="px-8 py-5.5"><StatusBadge status={inv.status} /></td>
-                          <td className="px-8 py-5.5"><BlockchainBadge status={inv.blockchainStatus} /></td>
-                          <td className="px-8 py-5.5" onClick={(e) => e.stopPropagation()}>
+                          <td className="px-5 py-5"><StatusBadge status={inv.status} /></td>
+                          <td className="px-5 py-5"><BlockchainBadge status={inv.blockchainStatus} /></td>
+                          <td className="px-5 py-5" onClick={(e) => e.stopPropagation()}>
                             {inv.status?.toLowerCase() === 'pending' ? (
                               <div className="flex gap-2">
                                 <button
                                   onClick={(e) => handleBuyerActionClick(inv, 'accepted', e)}
-                                  className="bg-[#047857] text-white text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-xl hover:bg-[#065F46] transition-all shadow-lg shadow-[#047857]/10"
+                                  className="bg-[#047857] text-white text-[9px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:bg-[#065F46] transition-all shadow-lg shadow-[#047857]/10"
                                 >
                                   Accept
                                 </button>
                                 <button
                                   onClick={(e) => handleBuyerActionClick(inv, 'rejected', e)}
-                                  className="bg-white border border-[#dc2626]/30 text-[#dc2626] text-[10px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-xl hover:bg-[#dc2626] hover:text-white transition-all shadow-sm"
+                                  className="bg-white border border-[#dc2626]/30 text-[#dc2626] text-[9px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:bg-[#dc2626] hover:text-white transition-all shadow-sm"
                                 >
                                   Reject
                                 </button>

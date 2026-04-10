@@ -56,10 +56,10 @@ export default function Sidebar({ role: overrideRole, isOpen, onClose }) {
     setSwitching(true);
     try {
       const newRole = role === 'seller' ? 'buyer' : 'seller';
-      const res = await api.post('/auth/switch-role', { role: newRole });
-      const { token } = res.data.data;
-      switchRole(token, newRole);
-      navigate(`/${newRole}/dashboard`, { replace: true });
+      const success = await switchRole(newRole);
+      if (success) {
+        navigate(`/${newRole}/overview`, { replace: true });
+      }
     } catch (err) {
       console.error('Failed to switch role', err);
     } finally {

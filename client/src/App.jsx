@@ -91,8 +91,9 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 
-                {/* Optimized Seller Routing */}
+                {/* Optimized Routing & Role Switch Resilience */}
                 <Route path="/seller" element={<Navigate to="/seller/overview" replace />} />
+                <Route path="/seller/dashboard" element={<Navigate to="/seller/overview" replace />} />
                 <Route
                   path="/seller/:tab"
                   element={
@@ -102,8 +103,8 @@ export default function App() {
                   }
                 />
 
-                {/* Optimized Buyer Routing */}
                 <Route path="/buyer" element={<Navigate to="/buyer/overview" replace />} />
+                <Route path="/buyer/dashboard" element={<Navigate to="/buyer/overview" replace />} />
                 <Route
                   path="/buyer/:tab"
                   element={
