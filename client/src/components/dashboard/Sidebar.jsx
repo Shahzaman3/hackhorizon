@@ -4,7 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import api from '../../api/axios';
 
 const sellerNav = [
-  { label: "Overview",       icon: "grid",    path: "/seller/dashboard" },
+  { label: "Overview",       icon: "grid",    path: "/seller/overview" },
   { label: "My Invoices",    icon: "file",    path: "/seller/invoices" },
   { label: "Upload Invoice", icon: "upload",  path: "/seller/upload" },
   { label: "Requests",       icon: "inbox",   path: "/seller/requests" },
@@ -15,7 +15,7 @@ const sellerNav = [
 ];
 
 const buyerNav = [
-  { label: "Overview",           icon: "grid",   path: "/buyer/dashboard" },
+  { label: "Overview",           icon: "grid",   path: "/buyer/overview" },
   { label: "Received Invoices",  icon: "file",   path: "/buyer/invoices" },
   { label: "Request Invoice",    icon: "inbox",  path: "/buyer/requests" },
   { label: "GST Summary",        icon: "chart",  path: "/buyer/gst" },
