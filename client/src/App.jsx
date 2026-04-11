@@ -22,7 +22,7 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7]">
+        <div className="flex min-h-screen items-center justify-center bg-dark">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-red-600 mb-4">Application Error</h1>
             <p className="text-gray-600 mb-4">{this.state.error?.message}</p>
@@ -50,7 +50,7 @@ const BuyerDashboard = lazy(() => import('./pages/BuyerDashboard'));
 
 // Ultra-lightweight loader for Suspense
 const GlobalLoader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-[#FDFBF7]">
+  <div className="flex min-h-screen items-center justify-center bg-dark">
     <div className="flex flex-col items-center gap-6">
        <div className="relative w-16 h-16">
           <div className="absolute inset-0 border-4 border-[#047857]/10 rounded-full" />

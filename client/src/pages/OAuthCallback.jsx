@@ -54,7 +54,7 @@ export default function OAuthCallback() {
             <p className="text-sm text-red-600 mt-3">{error}</p>
             <button
               onClick={() => navigate('/login', { replace: true })}
-              className="mt-6 inline-flex items-center justify-center bg-dark text-[#0A2518] rounded-lg px-5 py-2.5 font-semibold hover:bg-primary transition-colors"
+              className="mt-6 inline-flex items-center justify-center bg-dark text-text rounded-lg px-5 py-2.5 font-semibold hover:bg-primary transition-colors"
             >
               Back to Login
             </button>

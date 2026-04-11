@@ -15,53 +15,53 @@ export default function Testimonials() {
   const renderStars = (rating) => (
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} className={`text-sm ${i < rating ? 'text-[#047857]' : 'text-[#E5E2D9]'}`}>★</span>
+        <span key={i} className={`text-sm ${i < rating ? 'text-[#047857]' : 'text-[#E5E2D9]'}`}>*</span>
       ))}
     </div>
   );
 
   const TestimonialCard = ({ t, idx, isMobile }) => (
-    <div className={`break-inside-avoid bg-[#FFFFFF] border border-[#E5E2D9] rounded-2xl p-6 hover:border-[#D1CFC2] transition-all duration-300 group ${
-      isMobile ? 'inline-block w-[300px] whitespace-normal flex-shrink-0' : 'mb-5 w-full'
+    <div className={`break-inside-avoid bg-surface border border-border rounded-2xl p-6 hover:border-border-2 transition-all duration-300 group ${
+      isMobile ? 'inline-block w-[300px] whitespace-normal shrink-0' : 'mb-5 w-full'
     }`}>
       {/* Stars */}
       <div className="mb-4">{renderStars(t.rating)}</div>
 
       {/* Quote */}
-      <p className="text-[#4D6357] text-sm leading-relaxed group-hover:text-[#0A2518] transition-colors duration-300 mb-6">
+      <p className="text-muted text-sm leading-relaxed group-hover:text-text transition-colors duration-300 mb-6">
         "{t.text}"
       </p>
 
       {/* Author */}
-      <div className="flex items-center gap-3 pt-4 border-t border-[#E5E2D9]">
+      <div className="flex items-center gap-3 pt-4 border-t border-border">
         <div
-          className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-[#0A2518]"
+          className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-text"
           style={{ backgroundColor: avatarColors[idx % avatarColors.length], fontFamily: 'Plus Jakarta Sans' }}
         >
           {t.initials}
         </div>
         <div>
-          <div className="text-sm font-bold text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>{t.name}</div>
-          <div className="text-[11px] text-[#728279] font-medium">{t.role}, {t.company}</div>
+          <div className="text-sm font-bold text-text" style={{ fontFamily: 'Plus Jakarta Sans' }}>{t.name}</div>
+          <div className="text-[11px] text-muted-2 font-medium">{t.role}, {t.company}</div>
         </div>
       </div>
     </div>
   );
 
   return (
-    <section id="testimonials" className="bg-[#FDFBF7] py-28 px-0 md:px-10 overflow-hidden relative">
+    <section id="testimonials" className="bg-dark py-28 px-0 md:px-10 overflow-hidden relative">
       {/* bg glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#047857]/4 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Header */}
       <div className="text-center mb-16 px-6 max-w-2xl mx-auto flex flex-col items-center relative">
         <h2
-          className="text-[clamp(1.8rem,4vw,2.75rem)] font-extrabold text-[#0A2518] leading-tight mb-4"
+          className="text-[clamp(1.8rem,4vw,2.75rem)] font-extrabold text-text leading-tight mb-4"
           style={{ fontFamily: 'Plus Jakarta Sans' }}
         >
           Real businesses. Real results.
         </h2>
-        <p className="text-[#4D6357] text-base leading-relaxed">
+        <p className="text-muted text-base leading-relaxed">
           Thousands of Indian businesses use InvoiceSync to close their invoice cycles faster.
         </p>
       </div>
@@ -78,8 +78,8 @@ export default function Testimonials() {
 
         {/* Mobile horizontal scroll */}
         <div className="block md:hidden relative w-full overflow-hidden group px-4">
-          <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-[#FDFBF7] to-transparent z-10" />
-          <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-[#FDFBF7] to-transparent z-10" />
+          <div className="absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-dark to-transparent z-10" />
+          <div className="absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-dark to-transparent z-10" />
           <div
             className="flex w-max gap-4 group-hover:[animation-play-state:paused]"
             style={{ animation: 'scrollLeftMobile 30s linear infinite' }}
@@ -95,13 +95,13 @@ export default function Testimonials() {
       <div className="mt-20 text-center flex flex-col items-center px-6 relative">
         <div className="flex gap-1 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className="text-[#047857] text-2xl">★</span>
+            <span key={i} className="text-[#047857] text-2xl">*</span>
           ))}
         </div>
-        <div className="text-2xl font-bold text-[#0A2518] mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+        <div className="text-2xl font-bold text-text mb-1" style={{ fontFamily: 'Plus Jakarta Sans' }}>
           4.9/5 average rating
         </div>
-        <div className="text-sm text-[#4D6357]">From 2,000+ verified Indian businesses</div>
+        <div className="text-sm text-muted">From 2,000+ verified Indian businesses</div>
       </div>
 
       <style>{`

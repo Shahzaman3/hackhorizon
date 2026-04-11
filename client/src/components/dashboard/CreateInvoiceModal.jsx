@@ -98,24 +98,24 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
     }
   };
 
-  const labelCls = "text-[10px] font-black text-[#728279] uppercase tracking-[0.25em] mb-2.5 px-1 block";
-  const inputCls = "w-full bg-[#F4F1EA]/40 border border-[#E5E2D9] rounded-[1.25rem] px-6 py-4 text-[13px] font-bold text-[#0A2518] focus:border-[#047857] focus:bg-white outline-none transition-all placeholder-[#A2A9A5] shadow-sm";
+  const labelCls = "text-[10px] font-black text-muted-2 uppercase tracking-[0.25em] mb-2.5 px-1 block";
+  const inputCls = "w-full bg-surface-2/40 border border-border rounded-[1.25rem] px-6 py-4 text-[13px] font-bold text-text focus:border-[#047857] focus:bg-white outline-none transition-all placeholder-[#A2A9A5] shadow-sm";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A2518]/70 backdrop-blur-xl animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-[#FDFBF7] border border-white/20 rounded-[3rem] shadow-[0_32px_120px_rgba(0,0,0,0.4)] w-full max-w-xl max-h-[95vh] flex flex-col overflow-hidden animate-scale-in relative">
+      <div className="bg-dark border border-white/20 rounded-[3rem] shadow-[0_32px_120px_rgba(0,0,0,0.4)] w-full max-w-xl max-h-[95vh] flex flex-col overflow-hidden animate-scale-in relative">
         
         <div className="p-8 md:p-12 h-full flex flex-col">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-2xl font-black text-[#0A2518] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+              <h2 className="text-2xl font-black text-text tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
                 {step === 1 && "Genesis"}
                 {step === 2 && "Counterparty"}
                 {step === 3 && "Liquidity"}
               </h2>
-              <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-[0.3em] mt-2">STEP {step} OF 3 • SMART FILING</p>
+              <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-[0.3em] mt-2">STEP {step} OF 3 * SMART FILING</p>
             </div>
-            <button onClick={onClose} className="w-12 h-12 rounded-2xl bg-white border border-[#E5E2D9] flex items-center justify-center text-[#728279] hover:text-[#047857] hover:border-[#047857]/40 transition-all group">
+            <button onClick={onClose} className="w-12 h-12 rounded-2xl bg-white border border-border flex items-center justify-center text-muted-2 hover:text-[#047857] hover:border-[#047857]/40 transition-all group">
                <svg className="w-5 h-5 group-hover:rotate-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" strokeWidth="3" strokeLinecap="round" /></svg>
             </button>
           </div>
@@ -123,8 +123,8 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
           <div className="flex items-center justify-between px-10 mb-10">
             {[1, 2, 3].map((s) => (
               <div key={s} className="flex items-center group">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${step >= s ? 'bg-[#047857] text-white shadow-lg shadow-[#047857]/30' : 'bg-[#E5E2D9] text-[#728279]'}`}>
-                  {step > s ? '✓' : s}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${step >= s ? 'bg-[#047857] text-white shadow-lg shadow-[#047857]/30' : 'bg-[#E5E2D9] text-muted-2'}`}>
+                  {step > s ? 'OK' : s}
                 </div>
                 {s < 3 && <div className={`w-16 h-0.5 mx-2 transition-all ${step > s ? 'bg-[#047857]' : 'bg-[#E5E2D9]'}`} />}
               </div>
@@ -166,12 +166,12 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                         <button 
                            type="button" 
                            onClick={() => document.getElementById('invoice-image').click()}
-                           className="flex-1 border-2 border-dashed border-[#E5E2D9] rounded-2xl py-6 flex flex-col items-center justify-center gap-2 hover:border-[#047857]/40 hover:bg-[#F4F1EA]/50 transition-all group"
+                           className="flex-1 border-2 border-dashed border-border rounded-2xl py-6 flex flex-col items-center justify-center gap-2 hover:border-[#047857]/40 hover:bg-surface-2/50 transition-all group"
                         >
-                           <div className="w-10 h-10 rounded-full bg-[#F4F1EA] flex items-center justify-center text-[#728279] group-hover:bg-[#047857] group-hover:text-white transition-all">
+                           <div className="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center text-muted-2 group-hover:bg-[#047857] group-hover:text-white transition-all">
                               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                            </div>
-                           <span className="text-[10px] font-black text-[#728279] uppercase tracking-widest">Attach Digital Scan</span>
+                           <span className="text-[10px] font-black text-muted-2 uppercase tracking-widest">Attach Digital Scan</span>
                         </button>
                         <input 
                            id="invoice-image" 
@@ -189,7 +189,7 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                         {form.hasImage && (
                            <div className="w-20 h-[88px] rounded-2xl bg-[#047857]/10 flex flex-col items-center justify-center border border-[#047857]/20 animate-fade-in">
                               <span className="text-[8px] font-black text-[#047857] uppercase tracking-tighter">Verified</span>
-                              <div className="text-[10px] font-black text-[#047857]">SCAN ✓</div>
+                              <div className="text-[10px] font-black text-[#047857]">SCAN OK</div>
                            </div>
                         )}
                      </div>
@@ -204,12 +204,12 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                     <input type="text" name="buyerGstin" maxLength={15} value={form.buyerGstin} onChange={handle} required placeholder="00XXXXX0000X0X0" className={`${inputCls} font-mono uppercase tracking-[0.25em] h-[72px] text-[15px]`} />
                   </div>
                   <div className="p-8 bg-[#047857]/5 border border-[#047857]/10 rounded-[2rem] flex items-start gap-5">
-                     <div className="w-12 h-12 rounded-2xl bg-white border border-[#047857]/30 flex items-center justify-center flex-shrink-0 shadow-sm">
+                     <div className="w-12 h-12 rounded-2xl bg-white border border-[#047857]/30 flex items-center justify-center shrink-0 shadow-sm">
                         <svg className="w-6 h-6 text-[#047857]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                      </div>
                      <div>
-                        <p className="text-[12px] font-black text-[#0A2518] uppercase tracking-widest">Spectral Identification</p>
-                        <p className="text-[11px] text-[#4D6357] font-medium leading-relaxed mt-2 italic">Entity verification occurs during the cryptographic sealing phase across the distributed node network.</p>
+                        <p className="text-[12px] font-black text-text uppercase tracking-widest">Spectral Identification</p>
+                        <p className="text-[11px] text-muted font-medium leading-relaxed mt-2 italic">Entity verification occurs during the cryptographic sealing phase across the distributed node network.</p>
                      </div>
                   </div>
                 </div>
@@ -219,7 +219,7 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                 <div className="space-y-8 animate-fade-in">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
-                      <label className={labelCls}>Taxable Flux (₹)</label>
+                      <label className={labelCls}>Taxable Flux (Rs. )</label>
                       <input type="number" name="amount" value={form.amount} onChange={handle} required placeholder="0.00" className={`${inputCls} text-[20px] h-[72px]`} />
                     </div>
                     <div className="space-y-3">
@@ -233,9 +233,9 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                     </div>
                   </div>
 
-                  <div className="flex gap-4 p-1.5 bg-[#F4F1EA] rounded-[1.25rem]">
-                     <button type="button" onClick={() => setForm(f => ({...f, taxType: 'intra'}))} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.taxType === 'intra' ? 'bg-[#0A2518] text-white shadow-lg' : 'text-[#728279]'}`}>Intra-State</button>
-                     <button type="button" onClick={() => setForm(f => ({...f, taxType: 'inter'}))} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.taxType === 'inter' ? 'bg-[#0A2518] text-white shadow-lg' : 'text-[#728279]'}`}>Inter-State</button>
+                  <div className="flex gap-4 p-1.5 bg-surface-2 rounded-[1.25rem]">
+                     <button type="button" onClick={() => setForm(f => ({...f, taxType: 'intra'}))} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.taxType === 'intra' ? 'bg-[#0A2518] text-white shadow-lg' : 'text-muted-2'}`}>Intra-State</button>
+                     <button type="button" onClick={() => setForm(f => ({...f, taxType: 'inter'}))} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${form.taxType === 'inter' ? 'bg-[#0A2518] text-white shadow-lg' : 'text-muted-2'}`}>Inter-State</button>
                   </div>
 
                   <div className="grid grid-cols-3 gap-6">
@@ -243,31 +243,31 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
                       <>
                         <div className="space-y-3 text-center">
                           <label className="text-[9px] font-black text-[#A2A9A5] uppercase tracking-widest">CGST</label>
-                          <div className="py-5 bg-white border border-[#E5E2D9] rounded-[1.25rem] text-[14px] font-black text-[#0A2518]">₹{form.tax.cgst}</div>
+                          <div className="py-5 bg-white border border-border rounded-[1.25rem] text-[14px] font-black text-text">Rs. {form.tax.cgst}</div>
                         </div>
                         <div className="space-y-3 text-center">
                           <label className="text-[9px] font-black text-[#A2A9A5] uppercase tracking-widest">SGST</label>
-                          <div className="py-5 bg-white border border-[#E5E2D9] rounded-[1.25rem] text-[14px] font-black text-[#0A2518]">₹{form.tax.sgst}</div>
+                          <div className="py-5 bg-white border border-border rounded-[1.25rem] text-[14px] font-black text-text">Rs. {form.tax.sgst}</div>
                         </div>
                       </>
                     ) : (
                       <div className="col-span-2 space-y-3 text-center">
                         <label className="text-[9px] font-black text-[#A2A9A5] uppercase tracking-widest">IGST</label>
-                        <div className="py-5 bg-white border border-[#E5E2D9] rounded-[1.25rem] text-[14px] font-black text-[#0A2518]">₹{form.tax.igst}</div>
+                        <div className="py-5 bg-white border border-border rounded-[1.25rem] text-[14px] font-black text-text">Rs. {form.tax.igst}</div>
                       </div>
                     )}
                     <div className="space-y-3 text-center">
                        <label className="text-[9px] font-black text-[#047857] uppercase tracking-widest">GRAND TOTAL</label>
-                       <div className="py-5 bg-[#047857] text-white rounded-[1.25rem] text-[14px] font-black shadow-lg shadow-[#047857]/20">₹{(Number(form.amount) + Number(form.tax.cgst) + Number(form.tax.sgst) + Number(form.tax.igst)).toFixed(0)}</div>
+                       <div className="py-5 bg-[#047857] text-white rounded-[1.25rem] text-[14px] font-black shadow-lg shadow-[#047857]/20">Rs. {(Number(form.amount) + Number(form.tax.cgst) + Number(form.tax.sgst) + Number(form.tax.igst)).toFixed(0)}</div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="mt-12 pt-6 border-t border-[#E5E2D9] flex gap-5">
+            <div className="mt-12 pt-6 border-t border-border flex gap-5">
               {step > 1 && (
-                <button type="button" onClick={() => setStep(step - 1)} className="px-10 py-5 border border-[#E5E2D9] text-[#728279] text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-[#F4F1EA] transition-all">Back</button>
+                <button type="button" onClick={() => setStep(step - 1)} className="px-10 py-5 border border-border text-muted-2 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-surface-2 transition-all">Back</button>
               )}
               <button type="submit" disabled={loading} className="flex-1 bg-[#0A2518] hover:bg-[#047857] text-white py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.25em] shadow-xl shadow-[#0A2518]/20 transition-all disabled:opacity-50 flex items-center justify-center gap-4">
                 {step < 3 ? 'Continue Synchronization' : 'Finalize & Transmit'}
@@ -277,10 +277,10 @@ export default function CreateInvoiceModal({ onClose, onCreated }) {
         </div>
 
         {loading && (
-           <div className="absolute inset-0 bg-[#FDFBF7]/95 backdrop-blur-md z-[60] flex flex-col items-center justify-center text-center p-12">
+           <div className="absolute inset-0 bg-dark/95 backdrop-blur-md z-[60] flex flex-col items-center justify-center text-center p-12">
               <div className="w-24 h-24 rounded-full border-[8px] border-[#047857]/10 border-t-[#047857] animate-spin mb-10" />
-              <h3 className="text-2xl font-black text-[#0A2518] tracking-tight mb-4" style={{ fontFamily: 'Plus Jakarta Sans' }}>Sealing Ledger Entry</h3>
-              <p className="text-[13px] text-[#728279] font-medium leading-relaxed max-w-[340px]">
+              <h3 className="text-2xl font-black text-text tracking-tight mb-4" style={{ fontFamily: 'Plus Jakarta Sans' }}>Sealing Ledger Entry</h3>
+              <p className="text-[13px] text-muted-2 font-medium leading-relaxed max-w-[340px]">
                 Initiating cryptographic handshake. Constructing an immutable record across the distributed network. <br/><br/>Please do not disrupt the relay.
               </p>
            </div>

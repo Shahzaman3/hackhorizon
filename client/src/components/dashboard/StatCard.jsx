@@ -16,17 +16,17 @@ export default function StatCard({ label, value, sub, color, chartData = mockCha
   const accent = accentMap[color] || accentMap['border-primary'];
 
   return (
-    <div className="bg-white border border-[#E5E2D9] rounded-[1.5rem] p-6 flex flex-col gap-3 hover:border-[#047857]/30 hover:shadow-xl hover:shadow-[#047857]/5 transition-all duration-500 group relative overflow-hidden">
+    <div className="bg-white border border-border rounded-[1.5rem] p-6 flex flex-col gap-3 hover:border-[#047857]/30 hover:shadow-xl hover:shadow-[#047857]/5 transition-all duration-500 group relative overflow-hidden">
       {/* Background soft glow */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-transparent to-[#F4F1EA]/50 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-transparent to-[#F4F1EA]/50 pointer-events-none" />
 
       {/* Label Group */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent.dot }} />
-          <span className="text-[11px] font-bold text-[#4D6357] uppercase tracking-[0.14em]">{label}</span>
+          <span className="text-[11px] font-bold text-muted uppercase tracking-[0.14em]">{label}</span>
         </div>
-        <div className="w-10 h-10 rounded-full bg-[#F4F1EA] flex items-center justify-center group-hover:bg-[#047857]/10 transition-colors">
+        <div className="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center group-hover:bg-[#047857]/10 transition-colors">
            <svg className="w-4 h-4 text-[#047857]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
            </svg>
@@ -36,17 +36,17 @@ export default function StatCard({ label, value, sub, color, chartData = mockCha
       {/* Value */}
       <div className="flex items-end justify-between mt-1">
         <div className="flex flex-col">
-          <div className="text-[1.85rem] font-extrabold text-[#0A2518] leading-none tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+          <div className="text-[1.85rem] font-extrabold text-text leading-none tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
             {value}
           </div>
-          <div className="text-[11px] text-[#728279] font-medium mt-3 flex items-center gap-1.5">
+          <div className="text-[11px] text-muted-2 font-medium mt-3 flex items-center gap-1.5">
              <span className="text-[#047857] font-bold">+12%</span>
              {sub}
           </div>
         </div>
 
         {/* Sparkline Area */}
-        <div className="w-24 h-12 flex-shrink-0 opacity-40 group-hover:opacity-100 transition-opacity">
+        <div className="w-24 h-12 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <Area 

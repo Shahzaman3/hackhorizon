@@ -38,8 +38,8 @@ const mergedDuplicated = [...allCompanies, ...allCompanies];
 export default function Marquee() {
   return (
     <div className="group relative w-full overflow-hidden py-4 px-0">
-      <div className="absolute left-0 top-0 h-full w-24 sm:w-32 bg-linear-to-r from-[#FDFBF7] via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
-      <div className="absolute right-0 top-0 h-full w-24 sm:w-32 bg-linear-to-l from-[#FDFBF7] via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
+      <div className="absolute left-0 top-0 h-full w-24 sm:w-32 bg-linear-to-r from-dark via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
+      <div className="absolute right-0 top-0 h-full w-24 sm:w-32 bg-linear-to-l from-dark via-[#FDFBF7]/60 to-transparent z-20 pointer-events-none backdrop-blur-sm" />
 
       <div
         className="flex w-max gap-4 group-hover:[animation-play-state:paused]"
@@ -54,7 +54,7 @@ export default function Marquee() {
               {companyLogos[name]}
             </div>
             <span
-              className="text-sm font-semibold text-[#4D6357] whitespace-nowrap hover:text-[#0A2518] transition-colors duration-300 cursor-default"
+              className="text-sm font-semibold text-muted whitespace-nowrap hover:text-text transition-colors duration-300 cursor-default"
               style={{ fontFamily: 'Plus Jakarta Sans' }}
             >
               {name}

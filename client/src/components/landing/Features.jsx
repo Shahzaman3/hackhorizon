@@ -19,7 +19,7 @@ const tabs = [
     id: "tracking",
     label: "Status Tracking",
     heading: "Know exactly where your money is",
-    desc: "Every invoice moves through a clear lifecycle: Pending → Accepted / Rejected / Modified. Color-coded badges make status instantly scannable.",
+    desc: "Every invoice moves through a clear lifecycle: Pending -> Accepted / Rejected / Modified. Color-coded badges make status instantly scannable.",
     image: "/statustracking.png",
   },
   {
@@ -52,7 +52,7 @@ const Features = () => {
   return (
     <section
       id="features"
-      className="pt-20 pb-32 px-4 sm:px-6 bg-[#FDFBF7] relative overflow-hidden"
+      className="pt-20 pb-32 px-4 sm:px-6 bg-dark relative overflow-hidden"
     >
       {/* Background Grid and Glows */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
@@ -68,7 +68,7 @@ const Features = () => {
       {/* heading */}
       <div className="relative z-10 text-center mb-12">
         <h2 
-          className="text-[clamp(28px,5vw,56px)] font-bold tracking-tight leading-tight text-[#0A2518]"
+          className="text-[clamp(28px,5vw,56px)] font-bold tracking-tight leading-tight text-text"
           style={{ fontFamily: 'Plus Jakarta Sans' }}
         >
           One platform.
@@ -82,7 +82,7 @@ const Features = () => {
       <div className="max-w-7xl mx-auto">
 
         {/* desktop tabs */}
-        <div className="hidden sm:flex flex-wrap justify-center border-b border-[#E5E2D9] mb-12 relative z-10">
+        <div className="hidden sm:flex flex-wrap justify-center border-b border-border mb-12 relative z-10">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -90,7 +90,7 @@ const Features = () => {
               className={`px-5 py-3 text-sm font-semibold transition-all duration-200 relative border-b-2 -mb-px ${
                 active === tab.id
                   ? "text-[#047857] border-[#047857] drop-shadow-[0_0_8px_rgba(74,222,128,0.3)]"
-                  : "text-[#4D6357] border-transparent hover:text-[#0A2518] hover:border-[#047857]/30"
+                  : "text-muted border-transparent hover:text-text hover:border-[#047857]/30"
               }`}
             >
               {tab.label}
@@ -99,15 +99,15 @@ const Features = () => {
         </div>
 
         {/* mobile tabs */}
-        <div className="flex sm:hidden overflow-x-auto pb-0 mb-8 scrollbar-hide border-b border-[#E5E2D9]">
+        <div className="flex sm:hidden overflow-x-auto pb-0 mb-8 scrollbar-hide border-b border-border">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`flex-shrink-0 px-4 py-2.5 text-xs font-semibold border-b-2 -mb-px transition-all duration-200 whitespace-nowrap ${
+              className={`shrink-0 px-4 py-2.5 text-xs font-semibold border-b-2 -mb-px transition-all duration-200 whitespace-nowrap ${
                 active === tab.id
                   ? "text-[#047857] border-[#047857]"
-                  : "text-[#4D6357] border-transparent"
+                  : "text-muted border-transparent"
               }`}
             >
               {tab.label}
@@ -121,11 +121,11 @@ const Features = () => {
           {/* left text */}
           <div
             key={active + "-text"}
-            className="animate-fadeIn w-full lg:w-[300px] xl:w-[340px] flex-shrink-0"
+            className="animate-fadeIn w-full lg:w-[300px] xl:w-[340px] shrink-0"
           >
             {/* glass badge */}
             <div
-              className="inline-flex items-center px-3 py-1.5 rounded-full border border-[#047857]/20 text-xs font-semibold text-[#0A2518] mb-5 backdrop-blur-md"
+              className="inline-flex items-center px-3 py-1.5 rounded-full border border-[#047857]/20 text-xs font-semibold text-text mb-5 backdrop-blur-md"
               style={{
                 background: "rgba(74, 222, 128, 0.08)",
                 boxShadow: "inset 0 1px 0 rgba(74, 222, 128, 0.15)",
@@ -135,13 +135,13 @@ const Features = () => {
             </div>
 
             <h3 
-              className="text-[clamp(20px,2.5vw,34px)] font-bold text-[#0A2518] leading-tight tracking-tight mb-4"
+              className="text-[clamp(20px,2.5vw,34px)] font-bold text-text leading-tight tracking-tight mb-4"
               style={{ fontFamily: 'Plus Jakarta Sans' }}
             >
               {current.heading}
             </h3>
 
-            <p className="text-[#4D6357] text-sm leading-relaxed mb-7">
+            <p className="text-muted text-sm leading-relaxed mb-7">
               {current.desc}
             </p>
 
@@ -154,10 +154,10 @@ const Features = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActive(tab.id)}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-[#E5E2D9] text-sm text-[#4D6357] hover:text-[#0A2518] hover:border-[#047857]/30 transition-all text-left bg-transparent w-full group"
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-border text-sm text-muted hover:text-text hover:border-[#047857]/30 transition-all text-left bg-transparent w-full group"
                   >
                     <span className="font-medium">{tab.label}</span>
-                    <span className="ml-auto opacity-40 text-xs text-[#047857] group-hover:translate-x-1 transition-transform">→</span>
+                    <span className="ml-auto opacity-40 text-xs text-[#047857] group-hover:translate-x-1 transition-transform">-&gt;</span>
                   </button>
                 ))}
             </div>
@@ -166,29 +166,29 @@ const Features = () => {
           {/* right image/video mock */}
           <div
             key={active + "-img"}
-            className="animate-fadeIn rounded-2xl overflow-hidden border border-[#E5E2D9] bg-[#FFFFFF] flex flex-col w-full flex-1 min-w-0"
+            className="animate-fadeIn rounded-2xl overflow-hidden border border-border bg-surface flex flex-col w-full flex-1 min-w-0"
             style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.4)" }}
           >
             {/* Mac Browser Header */}
-            <div className="bg-[#F4F1EA] px-4 py-2.5 flex items-center gap-2 border-b border-[#E5E2D9]">
+            <div className="bg-surface-2 px-4 py-2.5 flex items-center gap-2 border-b border-border">
               {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
                 <div
                   key={c}
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ background: c }}
                 />
               ))}
-              <div className="ml-3 text-xs text-[#4D6357] bg-[#FDFBF7] px-3 py-1 rounded-md border border-[#E5E2D9] truncate tracking-wider">
+              <div className="ml-3 text-xs text-muted bg-dark px-3 py-1 rounded-md border border-border truncate tracking-wider">
                 app.invoicesync.com/{active}
               </div>
             </div>
             
             {/* Image Display Area */}
-            <div className="relative aspect-[16/10] w-full h-full overflow-hidden bg-[#FDFBF7] p-4 sm:p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#047857]/5 via-transparent to-transparent z-10 pointer-events-none" />
-              <img 
-                src={current.image} 
-                alt={current.label} 
+            <div className="relative aspect-[16/10] w-full h-full overflow-hidden bg-dark p-4 sm:p-6">
+              <div className="absolute inset-0 bg-linear-to-br from-[#047857]/5 via-transparent to-transparent z-10 pointer-events-none" />
+              <img
+                src={current.image}
+                alt={current.label}
                 className="w-full h-full object-contain animate-fade-in transition-transform duration-700 hover:scale-[1.03]"
               />
               <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] pointer-events-none z-20" />

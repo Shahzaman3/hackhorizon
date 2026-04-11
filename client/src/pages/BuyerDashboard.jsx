@@ -20,7 +20,7 @@ const FluxChart = ({ data }) => {
   const chartData = useMemo(() => data ? [...data].reverse() : [], [data]);
   
   if (!chartData.length) return (
-     <div className="h-full flex items-center justify-center text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest border border-dashed border-[#E5E2D9] rounded-[2.5rem] bg-[#F4F1EA]/10 font-sans">
+     <div className="h-full flex items-center justify-center text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest border border-dashed border-border rounded-[2.5rem] bg-surface-2/10 font-sans">
         Aggregating Stream...
      </div>
   );
@@ -95,19 +95,19 @@ export default function BuyerDashboard() {
   }, [data.stats]);
 
   const statsList = useMemo(() => [
-    { label: "ITC Credits",   value: `₹${fmtCurrency(data.stats?.gstPayable?.grandTotalGst || 0)}`, sub: "Accepted Stream", color: "border-emerald-500" },
+    { label: "ITC Credits",   value: `Rs. ${fmtCurrency(data.stats?.gstPayable?.grandTotalGst || 0)}`, sub: "Accepted Stream", color: "border-emerald-500" },
     { label: "Review Queue",  value: data.stats?.pendingCount || 0, sub: "Pending Action", color: "border-yellow-500" },
     { label: "Documents",     value: data.stats?.totalReceived || 0, sub: "Total Received", color: "border-primary" },
-    { label: "Net Payable",   value: `₹${fmtCurrency(data.stats?.totalAmountPayable || 0)}`, sub: "Settlement Due", color: "border-red-400" },
+    { label: "Net Payable",   value: `Rs. ${fmtCurrency(data.stats?.totalAmountPayable || 0)}`, sub: "Settlement Due", color: "border-red-400" },
   ], [data.stats]);
 
   // Optimized Layout Return
   return (
-    <div className="flex h-screen overflow-hidden bg-[#FDFBF7] relative antialiased">
+    <div className="flex h-screen overflow-hidden bg-dark relative antialiased">
       <Sidebar role="buyer" isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-[#0A2518]/40 backdrop-blur-sm z-30 md:hidden animate-fade-in" onClick={() => setMobileMenuOpen(false)} />
+        <div className="fixed inset-0 bg-text/40 backdrop-blur-sm z-30 md:hidden animate-fade-in" onClick={() => setMobileMenuOpen(false)} />
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
@@ -120,10 +120,10 @@ export default function BuyerDashboard() {
                <div className="text-[10px] font-black text-[#047857] uppercase tracking-[0.25em] mb-3 flex items-center gap-3">
                   <span className="w-6 h-px bg-[#047857]/30" /> Real-time Compliance View
                </div>
-               <h2 className="text-3xl font-extrabold text-[#0A2518] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>Unified Master Portal</h2>
+               <h2 className="text-3xl font-extrabold text-text tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>Unified Master Portal</h2>
             </div>
             {tab === 'overview' && (
-              <button onClick={() => navigate('/buyer/requests')} className="px-6 py-3 bg-[#0A2518] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#047857] transition-all shadow-xl shadow-[#0A2518]/10 hover:-translate-y-0.5 active:scale-95">
+              <button onClick={() => navigate('/buyer/requests')} className="px-6 py-3 bg-text text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#047857] transition-all shadow-xl shadow-text/10 hover:-translate-y-0.5 active:scale-95">
                 Submit New Request
               </button>
             )}
@@ -144,10 +144,10 @@ export default function BuyerDashboard() {
                    {/* Top Summary Bento */}
                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       {statsList.map((s, idx) => (
-                        <div key={idx} className={`bg-white border-l-4 ${s.color} border-[#E5E2D9] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative`}>
+                        <div key={idx} className={`bg-white border-l-4 ${s.color} border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative`}>
                            <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#047857]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                           <span className="text-[10px] font-black text-[#728279] uppercase tracking-widest block mb-1">{s.label}</span>
-                           <h4 className="text-2xl font-black text-[#0A2518] tracking-tight">{s.value}</h4>
+                           <span className="text-[10px] font-black text-muted-2 uppercase tracking-widest block mb-1">{s.label}</span>
+                           <h4 className="text-2xl font-black text-text tracking-tight">{s.value}</h4>
                            <p className="text-[9px] font-bold text-[#A2A9A5] uppercase tracking-tight mt-2 flex items-center gap-1.5">
                               <span className="w-1 h-1 rounded-full bg-[#047857]" /> {s.sub}
                            </p>
@@ -160,14 +160,14 @@ export default function BuyerDashboard() {
                      
                      {/* Analytical Layer (Chart + Map) */}
                      <div className="lg:col-span-8">
-                        <div className="bg-white border border-[#E5E2D9] rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group h-[480px] flex flex-col">
-                           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#047857]/10 to-transparent rounded-full translate-x-32 -translate-y-32 blur-3xl" />
-                           <div className="flex items-center justify-between mb-8 relative z-10 flex-shrink-0">
+                        <div className="bg-white border border-border rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group h-120 flex flex-col">
+                           <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-[#047857]/10 to-transparent rounded-full translate-x-32 -translate-y-32 blur-3xl" />
+                           <div className="flex items-center justify-between mb-8 relative z-10 shrink-0">
                              <div>
-                                <h3 className="text-lg font-black text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Accrual Flux Analytics</h3>
+                                <h3 className="text-lg font-black text-text" style={{ fontFamily: 'Plus Jakarta Sans' }}>Accrual Flux Analytics</h3>
                                 <p className="text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest">Real-time Integrated ITC Stream</p>
                              </div>
-                             <div className="px-4 py-1.5 bg-[#F4F1EA] rounded-full text-[9px] font-black text-[#4D6357] uppercase tracking-widest border border-[#E5E2D9]">Live Matrix</div>
+                             <div className="px-4 py-1.5 bg-surface-2 rounded-full text-[9px] font-black text-muted uppercase tracking-widest border border-border">Live Matrix</div>
                            </div>
                            <div className="flex-1 w-full relative z-10 min-h-0">
                               <FluxChart data={data.gstData?.breakdown} />
@@ -176,9 +176,9 @@ export default function BuyerDashboard() {
                      </div>
 
                      <div className="lg:col-span-4 h-full">
-                        <div className="bg-white border border-[#E5E2D9] rounded-[2.5rem] p-8 shadow-sm h-full flex flex-col">
-                           <h3 className="text-[10px] font-black text-[#0A2518] uppercase tracking-[0.25em] mb-8 text-center">Lifecycle Map</h3>
-                           <div className="flex-1 w-full relative min-h-[220px]">
+                        <div className="bg-white border border-border rounded-[2.5rem] p-8 shadow-sm h-full flex flex-col">
+                           <h3 className="text-[10px] font-black text-text uppercase tracking-[0.25em] mb-8 text-center">Lifecycle Map</h3>
+                           <div className="flex-1 w-full relative min-h-55">
                               {statusDist.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                   <PieChart>
@@ -189,11 +189,11 @@ export default function BuyerDashboard() {
                                   </PieChart>
                                 </ResponsiveContainer>
                               ) : (
-                                <div className="h-full flex items-center justify-center text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest border border-dashed border-[#E5E2D9] rounded-3xl">Neutral Data</div>
+                                <div className="h-full flex items-center justify-center text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest border border-dashed border-border rounded-3xl">Neutral Data</div>
                               )}
                               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                 <span className="text-2xl font-black text-[#0A2518]">{data.stats?.totalReceived || 0}</span>
-                                 <span className="text-[9px] font-bold text-[#728279] uppercase tracking-widest">Aggregate</span>
+                                 <span className="text-2xl font-black text-text">{data.stats?.totalReceived || 0}</span>
+                                 <span className="text-[9px] font-bold text-muted-2 uppercase tracking-widest">Aggregate</span>
                               </div>
                            </div>
                         </div>
@@ -201,13 +201,13 @@ export default function BuyerDashboard() {
 
                      {/* Primary Ledger Section - FULL WIDTH as requested */}
                      <div className="lg:col-span-12">
-                        <div className="bg-white border border-[#E5E2D9] rounded-[2.5rem] overflow-hidden shadow-sm">
-                           <div className="px-10 py-7 border-b border-[#E5E2D9] flex justify-between items-center bg-[#F4F1EA]/5 flex-wrap gap-6">
+                        <div className="bg-white border border-border rounded-[2.5rem] overflow-hidden shadow-sm">
+                           <div className="px-10 py-7 border-b border-border flex justify-between items-center bg-surface-2/5 flex-wrap gap-6">
                               <div>
-                                 <h3 className="font-black text-[#0A2518] text-lg" style={{ fontFamily: 'Plus Jakarta Sans' }}>Latest Procurements</h3>
+                                 <h3 className="font-black text-text text-lg" style={{ fontFamily: 'Plus Jakarta Sans' }}>Latest Procurements</h3>
                                  <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-widest mt-1">High-fidelity Transactional Ledger</p>
                               </div>
-                              <button onClick={() => navigate('/buyer/invoices')} className="px-6 py-3 bg-[#047857]/5 text-[10px] font-black text-[#047857] uppercase tracking-widest rounded-2xl hover:bg-[#047857] hover:text-white transition-all shadow-sm">Consolidated Archive →</button>
+                              <button onClick={() => navigate('/buyer/invoices')} className="px-6 py-3 bg-[#047857]/5 text-[10px] font-black text-[#047857] uppercase tracking-widest rounded-2xl hover:bg-[#047857] hover:text-white transition-all shadow-sm">Consolidated Archive -&gt;</button>
                            </div>
                            <InvoiceTable title="Invoice Detail View" invoices={data.invoices.slice(0, 8)} role="buyer" onRowClick={setSelectedInvoice} onRefresh={fetchData} />
                         </div>
@@ -215,7 +215,7 @@ export default function BuyerDashboard() {
 
                      {/* Secondary Support Layer */}
                      <div className="lg:col-span-6">
-                        <div className="bg-[#0A2518] rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group h-full">
+                        <div className="bg-text rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group h-full">
                            <div className="absolute bottom-0 left-0 w-full h-1 bg-[#047857]" />
                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-12 -translate-y-12 blur-3xl" />
                            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-8 relative z-10 flex items-center gap-3">
@@ -231,25 +231,25 @@ export default function BuyerDashboard() {
                                    </div>
                                 </div>
                               ))}
-                              <button onClick={() => navigate('/buyer/audit')} className="w-full text-center py-4 bg-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest mt-6 border border-white/5 hover:bg-white hover:text-[#0A2518] transition-all">Full Audit Stream</button>
+                              <button onClick={() => navigate('/buyer/audit')} className="w-full text-center py-4 bg-white/5 rounded-2xl text-[9px] font-black uppercase tracking-widest mt-6 border border-white/5 hover:bg-white hover:text-text transition-all">Full Audit Stream</button>
                            </div>
                         </div>
                      </div>
 
                      <div className="lg:col-span-6">
-                        <div className="bg-white border border-[#E5E2D9] rounded-[2.5rem] p-8 shadow-sm h-full">
-                           <h3 className="text-[10px] font-black text-[#0A2518] uppercase tracking-[0.25em] mb-8">Request Sync Flux</h3>
+                        <div className="bg-white border border-border rounded-[2.5rem] p-8 shadow-sm h-full">
+                           <h3 className="text-[10px] font-black text-text uppercase tracking-[0.25em] mb-8">Request Sync Flux</h3>
                            <div className="space-y-4">
                               {data.myRequests.slice(0, 3).map(req => (
-                                <div key={req._id} className="p-5 bg-[#F4F1EA]/20 border border-[#E5E2D9]/40 rounded-3xl hover:border-[#047857]/30 transition-all cursor-pointer group">
+                                <div key={req._id} className="p-5 bg-surface-2/20 border border-border/40 rounded-3xl hover:border-[#047857]/30 transition-all cursor-pointer group">
                                    <div className="flex justify-between items-center mb-1">
-                                      <span className="text-[11px] font-black text-[#0A2518]">{req.sellerGstin}</span>
+                                      <span className="text-[11px] font-black text-text">{req.sellerGstin}</span>
                                       <StatusBadge status={req.status} />
                                    </div>
                                    <span className="text-[9px] font-black text-[#A2A9A5] uppercase tracking-widest">{formatDate(req.createdAt)}</span>
                                 </div>
                               ))}
-                              <button onClick={() => navigate('/buyer/requests')} className="w-full py-4 text-[9px] font-black text-[#047857] uppercase tracking-widest mt-4 border-t border-[#E5E2D9]/60 hover:opacity-60 transition-opacity">Pipeline Archive →</button>
+                              <button onClick={() => navigate('/buyer/requests')} className="w-full py-4 text-[9px] font-black text-[#047857] uppercase tracking-widest mt-4 border-t border-border/60 hover:opacity-60 transition-opacity">Pipeline Archive -&gt;</button>
                            </div>
                         </div>
                      </div>
@@ -260,7 +260,7 @@ export default function BuyerDashboard() {
 
                {/* Dedicated Tab Routing */}
                {tab === 'invoices' && (
-                 <div className="bg-white border border-[#E5E2D9] rounded-[3rem] overflow-hidden shadow-sm lg:p-4">
+                 <div className="bg-white border border-border rounded-[3rem] overflow-hidden shadow-sm lg:p-4">
                     <InvoiceTable title="Exhaustive Procurement Ledger" invoices={data.invoices} role="buyer" onRowClick={setSelectedInvoice} onRefresh={fetchData} />
                  </div>
                )}
@@ -271,19 +271,19 @@ export default function BuyerDashboard() {
                    <div className="space-y-10 animate-fade-in">
                       <div className="flex items-center justify-between">
                          <div className="space-y-1">
-                            <h3 className="text-xl font-black text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Settlement & Liquidity</h3>
+                            <h3 className="text-xl font-black text-text" style={{ fontFamily: 'Plus Jakarta Sans' }}>Settlement & Liquidity</h3>
                             <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-widest">Digital Rupee & Fiat Payment Ledger</p>
                          </div>
                          <div className="px-5 py-3 bg-[#047857] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#047857]/20">
-                            Total Outstanding: ₹{fmtCurrency(data.stats?.totalAmountPayable || 0)}
+                            Total Outstanding: Rs. {fmtCurrency(data.stats?.totalAmountPayable || 0)}
                          </div>
                       </div>
 
-                      <div className="bg-white border border-[#E5E2D9] rounded-[3rem] overflow-hidden shadow-sm">
-                         <div className="px-10 py-7 border-b border-[#E5E2D9] flex justify-between items-center bg-[#F4F1EA]/10">
+                      <div className="bg-white border border-border rounded-[3rem] overflow-hidden shadow-sm">
+                         <div className="px-10 py-7 border-b border-border flex justify-between items-center bg-surface-2/10">
                             <div className="flex items-center gap-4">
                                <div className="w-1.5 h-1.5 rounded-full bg-[#047857] animate-pulse" />
-                               <span className="text-[11px] font-black text-[#0A2518] uppercase tracking-widest">Active Settlement Queue</span>
+                               <span className="text-[11px] font-black text-text uppercase tracking-widest">Active Settlement Queue</span>
                             </div>
                          </div>
                          <InvoiceTable 
@@ -300,32 +300,32 @@ export default function BuyerDashboard() {
                    <div className="space-y-10 animate-fade-in">
                       <div className="flex items-center justify-between">
                          <div className="space-y-1">
-                            <h3 className="text-xl font-black text-[#0A2518]" style={{ fontFamily: 'Plus Jakarta Sans' }}>Pipeline Sync Hub</h3>
+                            <h3 className="text-xl font-black text-text" style={{ fontFamily: 'Plus Jakarta Sans' }}>Pipeline Sync Hub</h3>
                             <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-widest">Active Procurement & Settlement Requests</p>
                          </div>
                          <div className="flex items-center gap-3">
-                            <div className="px-5 py-2.5 bg-white border border-[#E5E2D9] rounded-xl text-[10px] font-black text-[#0A2518] uppercase tracking-widest shadow-sm">
+                            <div className="px-5 py-2.5 bg-white border border-border rounded-xl text-[10px] font-black text-text uppercase tracking-widest shadow-sm">
                                Total Active: {data.myRequests.length}
                             </div>
                          </div>
                       </div>
 
                       {data.myRequests.length === 0 ? (
-                        <div className="h-[400px] flex flex-col items-center justify-center text-center bg-white border border-[#E5E2D9] border-dashed rounded-[3rem]">
-                           <div className="w-20 h-20 rounded-full bg-[#F4F1EA] flex items-center justify-center mb-6 text-[#728279]">
+                        <div className="h-100 flex flex-col items-center justify-center text-center bg-white border border-border border-dashed rounded-[3rem]">
+                           <div className="w-20 h-20 rounded-full bg-surface-2 flex items-center justify-center mb-6 text-muted-2">
                               <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                            </div>
-                           <h4 className="text-lg font-black text-[#0A2518] mb-2 uppercase tracking-wide">Empty Stream</h4>
+                           <h4 className="text-lg font-black text-text mb-2 uppercase tracking-wide">Empty Stream</h4>
                            <p className="text-[11px] text-[#A2A9A5] font-bold uppercase tracking-widest">Initiate a new procurement request to begin sync.</p>
                         </div>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
                            {data.myRequests.map(req => (
-                              <div key={req._id} className="bg-white border border-[#E5E2D9] rounded-[2.5rem] p-8 shadow-sm group hover:shadow-xl hover:-translate-y-1 transition-all relative overflow-hidden flex flex-col h-full">
-                                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#047857]/5 to-transparent rounded-full translate-x-12 -translate-y-12 blur-2xl group-hover:scale-150 transition-all duration-700" />
+                              <div key={req._id} className="bg-white border border-border rounded-[2.5rem] p-8 shadow-sm group hover:shadow-xl hover:-translate-y-1 transition-all relative overflow-hidden flex flex-col h-full">
+                                 <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-[#047857]/5 to-transparent rounded-full translate-x-12 -translate-y-12 blur-2xl group-hover:scale-150 transition-all duration-700" />
                                  
                                  <div className="flex justify-between items-start mb-10 relative z-10">
-                                    <div className="w-14 h-14 rounded-2xl bg-[#F4F1EA] text-[#047857] flex items-center justify-center group-hover:bg-[#047857] group-hover:text-white transition-all duration-300">
+                                    <div className="w-14 h-14 rounded-2xl bg-surface-2 text-[#047857] flex items-center justify-center group-hover:bg-[#047857] group-hover:text-white transition-all duration-300">
                                        <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                                     </div>
                                     <StatusBadge status={req.status} />
@@ -333,21 +333,21 @@ export default function BuyerDashboard() {
 
                                  <div className="flex-1 relative z-10">
                                     <span className="text-[10px] font-black text-[#A2A9A5] uppercase tracking-widest block mb-1">Target Counterparty</span>
-                                    <h5 className="text-base font-black text-[#0A2518] tracking-tight mb-8 group-hover:text-[#047857] transition-colors">{req.sellerGstin}</h5>
+                                    <h5 className="text-base font-black text-text tracking-tight mb-8 group-hover:text-[#047857] transition-colors">{req.sellerGstin}</h5>
                                     
-                                    <div className="grid grid-cols-2 gap-4 pt-6 border-t border-[#E5E2D9]/60">
+                                    <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border/60">
                                        <div>
-                                          <span className="text-[9px] font-black text-[#728279] uppercase tracking-widest block mb-1">Temporal ID</span>
-                                          <span className="text-[11px] font-bold text-[#0A2518]">{formatDate(req.createdAt)}</span>
+                                          <span className="text-[9px] font-black text-muted-2 uppercase tracking-widest block mb-1">Temporal ID</span>
+                                          <span className="text-[11px] font-bold text-text">{formatDate(req.createdAt)}</span>
                                        </div>
                                        <div>
-                                          <span className="text-[9px] font-black text-[#728279] uppercase tracking-widest block mb-1">Document Status</span>
-                                          <span className="text-[11px] font-bold text-[#4D6357] uppercase">{req.status}</span>
+                                          <span className="text-[9px] font-black text-muted-2 uppercase tracking-widest block mb-1">Document Status</span>
+                                          <span className="text-[11px] font-bold text-muted uppercase">{req.status}</span>
                                        </div>
                                     </div>
                                  </div>
 
-                                 <button className="w-full mt-10 py-4 bg-[#F4F1EA]/50 border border-[#E5E2D9] text-[#728279] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#0A2518] hover:text-white hover:border-[#0A2518] transition-all relative z-10">
+                                 <button className="w-full mt-10 py-4 bg-surface-2/50 border border-border text-muted-2 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-text hover:text-white hover:border-text transition-all relative z-10">
                                     Cancel Request
                                  </button>
                               </div>

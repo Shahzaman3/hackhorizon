@@ -39,7 +39,7 @@ export default function Button({
       {loading ? (
         <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full spin" />
       ) : icon ? (
-        <span className="flex-shrink-0">{icon}</span>
+        <span className="shrink-0">{icon}</span>
       ) : null}
       {children}
     </button>

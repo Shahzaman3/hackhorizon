@@ -25,7 +25,7 @@ export default function BrandLogo({
       />
       {showText && (
         <span
-          className={`text-[#0A2518] font-bold tracking-tight ${textClassName}`.trim()}
+          className={`text-text font-bold tracking-tight ${textClassName}`.trim()}
           style={{ fontFamily: 'Plus Jakarta Sans' }}
         >
           HackHorizon

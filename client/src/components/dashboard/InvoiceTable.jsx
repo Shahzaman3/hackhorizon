@@ -74,7 +74,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
       className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-300 border ${
         filter === f
           ? 'bg-[#047857] text-white border-[#047857] shadow-lg shadow-[#047857]/20'
-          : 'bg-white text-[#4D6357] border-[#E5E2D9] hover:border-[#047857]/40 hover:text-[#0A2518] shadow-sm'
+          : 'bg-white text-muted border-border hover:border-[#047857]/40 hover:text-text shadow-sm'
       }`}
     >
       {f}
@@ -84,8 +84,8 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
   return (
     <div className="bg-white flex flex-col overflow-hidden">
       {/* Table Local Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-8 py-6 border-b border-[#E5E2D9] gap-4 bg-[#F4F1EA]/10">
-        <h3 className="font-extrabold text-[#0A2518] text-lg tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-8 py-6 border-b border-border gap-4 bg-surface-2/10">
+        <h3 className="font-extrabold text-text text-lg tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
           {title}
         </h3>
         <div className="flex gap-2.5 flex-wrap">
@@ -97,9 +97,9 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
       <div className="overflow-x-auto custom-scrollbar w-full">
         <table className="w-full text-sm text-left border-collapse min-w-[900px]">
           <thead>
-            <tr className="bg-[#F4F1EA]/30 border-b border-[#E5E2D9]">
+            <tr className="bg-surface-2/30 border-b border-border">
               {columns.map((col) => (
-                <th key={col} className="px-5 py-4 text-[10px] font-black text-[#728279] uppercase tracking-[0.18em] whitespace-nowrap">
+                <th key={col} className="px-5 py-4 text-[10px] font-black text-muted-2 uppercase tracking-[0.18em] whitespace-nowrap">
                   {col}
                 </th>
               ))}
@@ -115,18 +115,18 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                 return (
                   <React.Fragment key={invId}>
                     <tr
-                      className="hover:bg-[#F4F1EA]/10 transition-all cursor-pointer group animate-fade-in"
+                      className="hover:bg-surface-2/10 transition-all cursor-pointer group animate-fade-in"
                       onClick={() => onRowClick && onRowClick(inv)}
                     >
-                      <td className="px-5 py-5 font-black text-[#0A2518] text-[12px] tracking-tight whitespace-nowrap">{inv.invoiceNumber}</td>
+                      <td className="px-5 py-5 font-black text-text text-[12px] tracking-tight whitespace-nowrap">{inv.invoiceNumber}</td>
                       <td className="px-5 py-5">
                         <div className="flex flex-col min-w-[120px]">
                            <span className="text-[11px] font-black text-[#047857] uppercase tracking-wider truncate">{role === 'seller' ? inv.buyerGstin : inv.sellerGstin}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-5 font-black text-[#0A2518] text-[13px] whitespace-nowrap">₹{inv.amount?.toLocaleString('en-IN')}</td>
-                      <td className="px-5 py-5 text-[11px] font-bold text-[#4D6357] whitespace-nowrap">₹{totalTax?.toLocaleString('en-IN')}</td>
-                      <td className="px-5 py-5 text-[10px] text-[#728279] font-bold uppercase tracking-widest whitespace-nowrap">{formatDate(inv.date)}</td>
+                      <td className="px-5 py-5 font-black text-text text-[13px] whitespace-nowrap">Rs. {inv.amount?.toLocaleString('en-IN')}</td>
+                      <td className="px-5 py-5 text-[11px] font-bold text-muted whitespace-nowrap">Rs. {totalTax?.toLocaleString('en-IN')}</td>
+                      <td className="px-5 py-5 text-[10px] text-muted-2 font-bold uppercase tracking-widest whitespace-nowrap">{formatDate(inv.date)}</td>
 
                       {role === 'seller' ? (
                         <>
@@ -145,7 +145,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                             </button>
                           </td>
                           <td className="px-5 py-5 text-right">
-                             <div className="w-8 h-8 rounded-full bg-[#F4F1EA] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
+                             <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
                              </div>
                           </td>
@@ -171,7 +171,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                                 </button>
                               </div>
                             ) : (
-                               <div className="w-8 h-8 rounded-full bg-[#F4F1EA] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
+                               <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all group-hover:bg-[#047857] group-hover:text-white scale-90 group-hover:scale-100 shadow-sm">
                                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7"/></svg>
                                </div>
                             )}
@@ -182,9 +182,9 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
 
                     {/* Inline Action View */}
                     {inlineAction?.id === invId && (
-                      <tr className="bg-[#F4F1EA]/20 animate-scale-in">
+                      <tr className="bg-surface-2/20 animate-scale-in">
                         <td colSpan={columns.length} className="px-8 py-6">
-                          <div className="flex items-center gap-5 bg-white p-4 rounded-2xl border border-[#E5E2D9] shadow-inner shadow-[#0A2518]/5">
+                          <div className="flex items-center gap-5 bg-white p-4 rounded-2xl border border-border shadow-inner shadow-[#0A2518]/5">
                             <div className="w-10 h-10 rounded-xl bg-[#dc2626]/10 flex items-center justify-center text-[#dc2626]">
                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                             </div>
@@ -193,7 +193,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                               value={actionNote}
                               onChange={(e) => setActionNote(e.target.value)}
                               placeholder={inlineAction.type === 'rejected' ? 'Provide a formal reason for rejection...' : 'Specify required modification detail...'}
-                              className="text-sm bg-transparent border-b-2 border-[#E5E2D9] focus:border-[#047857] rounded-none px-1 py-2 flex-1 outline-none text-[#0A2518] placeholder-[#A2A9A5] font-bold transition-all"
+                              className="text-sm bg-transparent border-b-2 border-border focus:border-[#047857] rounded-none px-1 py-2 flex-1 outline-none text-text placeholder-[#A2A9A5] font-bold transition-all"
                               autoFocus
                             />
                             <div className="flex gap-2">
@@ -205,7 +205,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                                </button>
                                <button
                                  onClick={() => setInlineAction(null)}
-                                 className="text-[10px] font-black uppercase tracking-widest px-4 py-3 rounded-xl text-[#728279] hover:bg-[#F4F1EA]"
+                                 className="text-[10px] font-black uppercase tracking-widest px-4 py-3 rounded-xl text-muted-2 hover:bg-surface-2"
                                >
                                  Cancel
                                </button>
@@ -221,13 +221,13 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
               <tr>
                 <td colSpan={columns.length} className="px-8 py-32 text-center">
                   <div className="flex flex-col items-center gap-6">
-                    <div className="w-20 h-20 rounded-full bg-[#F4F1EA] flex items-center justify-center relative overflow-hidden">
+                    <div className="w-20 h-20 rounded-full bg-surface-2 flex items-center justify-center relative overflow-hidden">
                        <svg className="w-10 h-10 text-[#A2A9A5] relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                       <div className="absolute inset-0 bg-gradient-to-tr from-[#047857]/5 to-transparent animate-pulse" />
+                       <div className="absolute inset-0 bg-linear-to-tr from-[#047857]/5 to-transparent animate-pulse" />
                     </div>
                     <div className="space-y-1">
-                       <h5 className="text-lg font-black text-[#0A2518]">No ledger entries found</h5>
-                       <p className="text-xs font-medium text-[#728279]">Your historical records will manifest here once generated.</p>
+                       <h5 className="text-lg font-black text-text">No ledger entries found</h5>
+                       <p className="text-xs font-medium text-muted-2">Your historical records will manifest here once generated.</p>
                     </div>
                   </div>
                 </td>
