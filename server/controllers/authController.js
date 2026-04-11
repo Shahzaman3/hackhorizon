@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const { normalizeGstin, isValidGstinFormat } = require('../utils/gstin');
 
 // Projection helper to avoid fetching sensitive or massive fields repeatedly
 const USER_PROJECTION = 'name email role gstin profilePicture businesses';
@@ -63,9 +64,14 @@ exports.updateGstin = async (req, res, next) => {
         const { gstin } = req.body;
         if (!gstin) return res.status(400).json({ success: false, message: "GSTIN is required" });
 
+        const normalizedGstin = normalizeGstin(gstin);
+        if (!isValidGstinFormat(normalizedGstin)) {
+            return res.status(400).json({ success: false, message: "Invalid GSTIN format" });
+        }
+
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { gstin },
+            { gstin: normalizedGstin },
             { new: true, select: USER_PROJECTION }
         ).lean();
 
@@ -103,12 +109,17 @@ exports.register = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        const normalizedGstin = normalizeGstin(gstin);
+        if (normalizedGstin && !isValidGstinFormat(normalizedGstin)) {
+            return res.status(400).json({ success: false, message: "Invalid GSTIN format" });
+        }
+
         const user = await User.create({
             name: name.trim(),
             email,
             password: hashedPassword,
             role,
-            gstin: (gstin || '').trim().toUpperCase()
+            gstin: normalizedGstin
         });
 
         req.login(user, (err) => {
@@ -195,10 +206,15 @@ exports.addBusiness = async (req, res, next) => {
         const { name, gstin, type } = req.body;
         if (!name || !gstin) return res.status(400).json({ success: false, message: "Business name and GSTIN are required" });
 
+        const normalizedGstin = normalizeGstin(gstin);
+        if (!isValidGstinFormat(normalizedGstin)) {
+            return res.status(400).json({ success: false, message: "Invalid GSTIN format" });
+        }
+
         // Update directly in DB to avoid loading user into memory
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { $push: { businesses: { name, gstin, type: type || 'both' } } },
+            { $push: { businesses: { name, gstin: normalizedGstin, type: type || 'both' } } },
             { new: true, select: USER_PROJECTION }
         ).lean();
 

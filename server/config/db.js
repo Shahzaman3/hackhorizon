@@ -6,8 +6,10 @@ const connectDB = async () => {
         console.log("MongoDB connected");
     } catch (err) {
         console.error("MongoDB Connection Error:", err.message);
-        // Soft fail instead of crashing Node so the local server still runs for frontend UI tests
-        console.warn("Server is running without Database connection limit.");
+        if (process.env.NODE_ENV === 'production') {
+            process.exit(1);
+        }
+        console.warn("Server is running without Database connection in non-production mode.");
     }
 };
 

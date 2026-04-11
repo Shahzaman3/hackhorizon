@@ -34,6 +34,14 @@ const userSchema = new mongoose.Schema({
         uppercase: true,
         default: ""
     },
+    gstinVerified: {
+        type: Boolean,
+        default: false
+    },
+    gstinVerifiedAt: {
+        type: Date,
+        default: null
+    },
     profilePicture: {
         type: String,
         default: ""
@@ -41,7 +49,9 @@ const userSchema = new mongoose.Schema({
     businesses: [{
         name: { type: String, required: true, trim: true },
         gstin: { type: String, required: true, uppercase: true, trim: true },
-        type: { type: String, enum: ['seller', 'buyer', 'both'], default: 'both' }
+        type: { type: String, enum: ['seller', 'buyer', 'both'], default: 'both' },
+        gstinVerified: { type: Boolean, default: false },
+        gstinVerifiedAt: { type: Date, default: null }
     }],
     createdAt: { 
         type: Date, 

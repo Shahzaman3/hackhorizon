@@ -3,10 +3,11 @@ const passport = require('passport');
 const router = express.Router();
 const { getCurrentUser, switchRole, updateGstin, addBusiness, logout, register, login } = require('../controllers/authController');
 const verifyToken = require('../middleware/auth');
+const { writeLimiter } = require('../middleware/rateLimit');
 
 // Local auth routes
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', writeLimiter, register);
+router.post('/login', writeLimiter, login);
 
 // Google OAuth routes
 router.get('/google', (req, res, next) => {
@@ -43,9 +44,9 @@ router.get('/google/callback',
 
 // Protected routes
 router.get('/me', verifyToken, getCurrentUser);
-router.post('/switch-role', verifyToken, switchRole);
-router.put('/gstin', verifyToken, updateGstin);
-router.post('/business', verifyToken, addBusiness);
-router.post('/logout', logout);
+router.post('/switch-role', writeLimiter, verifyToken, switchRole);
+router.put('/gstin', writeLimiter, verifyToken, updateGstin);
+router.post('/business', writeLimiter, verifyToken, addBusiness);
+router.post('/logout', writeLimiter, logout);
 
 module.exports = router;

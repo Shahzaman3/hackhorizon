@@ -3,14 +3,41 @@ import StatusBadge from './StatusBadge';
 import BlockchainBadge from './BlockchainBadge';
 import api from '../../api/axios';
 
-export default function InvoiceTable({ title = "Invoices", invoices = [], role = "seller", onRowClick, onRefresh }) {
+export default function InvoiceTable({ title = "Invoices", invoices = [], role = "seller", onRowClick, onRefresh, initialFilter = 'All' }) {
   const [filter, setFilter] = useState('All');
+    React.useEffect(() => {
+      if (initialFilter) {
+        setFilter(initialFilter);
+      }
+    }, [initialFilter]);
+
   const [inlineAction, setInlineAction] = useState(null);
   const [actionNote, setActionNote] = useState('');
 
+  const evaluateRisk = (inv) => {
+    const issues = [];
+    const totalTax = (inv.tax?.cgst || 0) + (inv.tax?.sgst || 0) + (inv.tax?.igst || 0);
+
+    if (inv.blockchainStatus !== 'confirmed') issues.push('unconfirmed-chain');
+    if (inv.paymentStatus !== 'paid') issues.push('unpaid');
+    if (totalTax <= 0) issues.push('zero-tax');
+    if (!(role === 'seller' ? inv.buyerGstin : inv.sellerGstin)) issues.push('missing-counterparty');
+
+    return {
+      issues,
+      hasIssues: issues.length > 0,
+    };
+  };
+
   const filteredInvoices = invoices.filter(inv => {
+    const status = inv.status?.toLowerCase();
+    const risk = evaluateRisk(inv);
+
     if (filter === 'All') return true;
-    return inv.status?.toLowerCase() === filter.toLowerCase();
+    if (filter === 'Needs Review') return risk.hasIssues;
+    if (filter === 'Unconfirmed Chain') return risk.issues.includes('unconfirmed-chain');
+    if (filter === 'Unpaid') return risk.issues.includes('unpaid');
+    return status === filter.toLowerCase();
   });
 
   const handlePaymentToggle = async (inv, e) => {
@@ -89,13 +116,13 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
           {title}
         </h3>
         <div className="flex gap-2.5 flex-wrap">
-          {['All', 'Pending', 'Accepted', 'Rejected'].map(filterBtn)}
+          {['All', 'Pending', 'Accepted', 'Rejected', 'Needs Review', 'Unconfirmed Chain', 'Unpaid'].map(filterBtn)}
         </div>
       </div>
 
       {/* Table Interface */}
       <div className="overflow-x-auto custom-scrollbar w-full">
-        <table className="w-full text-sm text-left border-collapse min-w-[900px]">
+        <table className="w-full text-sm text-left border-collapse min-w-225">
           <thead>
             <tr className="bg-surface-2/30 border-b border-border">
               {columns.map((col) => (
@@ -105,12 +132,13 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E5E2D9]/60">
+          <tbody className="divide-y divide-border/60">
             {filteredInvoices.length > 0 ? (
               filteredInvoices.map((inv) => {
                 const totalTax = (inv.tax?.cgst || 0) + (inv.tax?.sgst || 0) + (inv.tax?.igst || 0);
                 const isPaid = inv.paymentStatus === 'paid';
                 const invId = inv.id || inv._id;
+                const risk = evaluateRisk(inv);
 
                 return (
                   <React.Fragment key={invId}>
@@ -120,8 +148,13 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                     >
                       <td className="px-5 py-5 font-black text-text text-[12px] tracking-tight whitespace-nowrap">{inv.invoiceNumber}</td>
                       <td className="px-5 py-5">
-                        <div className="flex flex-col min-w-[120px]">
+                        <div className="flex flex-col min-w-30">
                            <span className="text-[11px] font-black text-[#047857] uppercase tracking-wider truncate">{role === 'seller' ? inv.buyerGstin : inv.sellerGstin}</span>
+                           {risk.hasIssues && (
+                             <span className="mt-1 text-[8px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 border border-amber-200 rounded-full px-2 py-0.5 w-fit">
+                               Needs Review
+                             </span>
+                           )}
                         </div>
                       </td>
                       <td className="px-5 py-5 font-black text-text text-[13px] whitespace-nowrap">Rs. {inv.amount?.toLocaleString('en-IN')}</td>
@@ -184,7 +217,7 @@ export default function InvoiceTable({ title = "Invoices", invoices = [], role =
                     {inlineAction?.id === invId && (
                       <tr className="bg-surface-2/20 animate-scale-in">
                         <td colSpan={columns.length} className="px-8 py-6">
-                          <div className="flex items-center gap-5 bg-white p-4 rounded-2xl border border-border shadow-inner shadow-[#0A2518]/5">
+                          <div className="flex items-center gap-5 bg-white p-4 rounded-2xl border border-border shadow-inner shadow-text/5">
                             <div className="w-10 h-10 rounded-xl bg-[#dc2626]/10 flex items-center justify-center text-[#dc2626]">
                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                             </div>

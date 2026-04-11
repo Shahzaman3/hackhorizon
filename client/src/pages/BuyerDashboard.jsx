@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopBar from '../components/dashboard/TopBar';
 import StatCard from '../components/dashboard/StatCard';
@@ -8,6 +8,7 @@ import InvoiceModal from '../components/dashboard/InvoiceModal';
 import SettingsTab from '../components/dashboard/SettingsTab';
 import AuditFeed from '../components/dashboard/AuditFeed';
 import StatusBadge from '../components/dashboard/StatusBadge';
+import GstReturnsPanel from '../components/dashboard/GstReturnsPanel';
 import { StatSkeleton, ChartSkeleton, TableSkeleton, CardSkeleton } from '../components/dashboard/SkeletonLoader';
 import api from '../api/axios';
 import { 
@@ -47,12 +48,14 @@ const FluxChart = ({ data }) => {
 export default function BuyerDashboard() {
   const { tab = 'overview' } = useParams();
   const navigate = useNavigate();
+   const location = useLocation();
   
   // States
   const [data, setData] = useState({ stats: null, invoices: [], myRequests: [], gstData: null, auditLogs: [] });
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   const refreshTimeoutRef = useRef(null);
 
   // OPTIMIZATION: Consolidated data fetching with better error handling
   const fetchData = useCallback(async () => {
@@ -80,6 +83,44 @@ export default function BuyerDashboard() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+   useEffect(() => {
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const apiBase = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
+      const eventSource = new EventSource(`${apiBase}/dashboard/stream`, { withCredentials: true });
+
+      const scheduleRefresh = () => {
+         if (refreshTimeoutRef.current) {
+            return;
+         }
+         refreshTimeoutRef.current = window.setTimeout(async () => {
+            refreshTimeoutRef.current = null;
+            await fetchData();
+         }, 600);
+      };
+
+      const handleInvoiceEvent = (evt) => {
+         try {
+            const payload = JSON.parse(evt.data);
+            if (payload?.type?.startsWith('invoice.')) {
+               scheduleRefresh();
+            }
+         } catch (error) {
+            console.error('Realtime payload parse error:', error);
+         }
+      };
+
+      eventSource.addEventListener('invoice-event', handleInvoiceEvent);
+
+      return () => {
+         eventSource.removeEventListener('invoice-event', handleInvoiceEvent);
+         eventSource.close();
+         if (refreshTimeoutRef.current) {
+            window.clearTimeout(refreshTimeoutRef.current);
+            refreshTimeoutRef.current = null;
+         }
+      };
+   }, [fetchData]);
+
   // Helpers
   const fmtCurrency = (val) => (!val && val !== 0 ? '--' : val.toLocaleString('en-IN'));
   const formatDate = (dateStr) => (!dateStr ? '--' : new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
@@ -100,6 +141,11 @@ export default function BuyerDashboard() {
     { label: "Documents",     value: data.stats?.totalReceived || 0, sub: "Total Received", color: "border-primary" },
     { label: "Net Payable",   value: `Rs. ${fmtCurrency(data.stats?.totalAmountPayable || 0)}`, sub: "Settlement Due", color: "border-red-400" },
   ], [data.stats]);
+
+   const invoiceFilterFromUrl = useMemo(() => {
+      const params = new URLSearchParams(location.search);
+      return params.get('risk') || 'All';
+   }, [location.search]);
 
   // Optimized Layout Return
   return (
@@ -261,10 +307,17 @@ export default function BuyerDashboard() {
                {/* Dedicated Tab Routing */}
                {tab === 'invoices' && (
                  <div className="bg-white border border-border rounded-[3rem] overflow-hidden shadow-sm lg:p-4">
-                    <InvoiceTable title="Exhaustive Procurement Ledger" invoices={data.invoices} role="buyer" onRowClick={setSelectedInvoice} onRefresh={fetchData} />
+                              <InvoiceTable
+                                 title="Exhaustive Procurement Ledger"
+                                 invoices={data.invoices}
+                                 role="buyer"
+                                 onRowClick={setSelectedInvoice}
+                                 onRefresh={fetchData}
+                                 initialFilter={invoiceFilterFromUrl}
+                              />
                  </div>
                )}
-               {tab === 'gst' && <AuditFeed />}
+               {tab === 'gst' && <GstReturnsPanel />}
                {tab === 'audit' && <AuditFeed />}
                {tab === 'settings' && <SettingsTab />}
                 {tab === 'payments' && (

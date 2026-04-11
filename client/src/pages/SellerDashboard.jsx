@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopBar from '../components/dashboard/TopBar';
 import StatCard from '../components/dashboard/StatCard';
@@ -8,6 +8,7 @@ import InvoiceModal from '../components/dashboard/InvoiceModal';
 import CreateInvoiceModal from '../components/dashboard/CreateInvoiceModal';
 import SettingsTab from '../components/dashboard/SettingsTab';
 import AuditFeed from '../components/dashboard/AuditFeed';
+import GstReturnsPanel from '../components/dashboard/GstReturnsPanel';
 import { StatSkeleton, ChartSkeleton, TableSkeleton, CardSkeleton } from '../components/dashboard/SkeletonLoader';
 import api from '../api/axios';
 import { 
@@ -50,6 +51,7 @@ const RevenueFluxChart = ({ data }) => {
 export default function SellerDashboard() {
   const { tab = 'overview' } = useParams();
   const navigate = useNavigate();
+   const location = useLocation();
   
   // Data State
   const [data, setData] = useState({ stats: null, invoices: [], requests: [], gstData: null, auditLogs: [] });
@@ -57,6 +59,7 @@ export default function SellerDashboard() {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   const refreshTimeoutRef = useRef(null);
 
   // OPTIMIZATION: Unified Data sync
   const fetchData = useCallback(async () => {
@@ -84,6 +87,44 @@ export default function SellerDashboard() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+   useEffect(() => {
+      const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const apiBase = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
+      const eventSource = new EventSource(`${apiBase}/dashboard/stream`, { withCredentials: true });
+
+      const scheduleRefresh = () => {
+         if (refreshTimeoutRef.current) {
+            return;
+         }
+         refreshTimeoutRef.current = window.setTimeout(async () => {
+            refreshTimeoutRef.current = null;
+            await fetchData();
+         }, 600);
+      };
+
+      const handleInvoiceEvent = (evt) => {
+         try {
+            const payload = JSON.parse(evt.data);
+            if (payload?.type?.startsWith('invoice.')) {
+               scheduleRefresh();
+            }
+         } catch (error) {
+            console.error('Realtime payload parse error:', error);
+         }
+      };
+
+      eventSource.addEventListener('invoice-event', handleInvoiceEvent);
+
+      return () => {
+         eventSource.removeEventListener('invoice-event', handleInvoiceEvent);
+         eventSource.close();
+         if (refreshTimeoutRef.current) {
+            window.clearTimeout(refreshTimeoutRef.current);
+            refreshTimeoutRef.current = null;
+         }
+      };
+   }, [fetchData]);
+
   // Tab check
   useEffect(() => {
     if (tab === 'upload') {
@@ -110,12 +151,17 @@ export default function SellerDashboard() {
     { label: "In Review",      value: data.stats?.pendingCount || 0,  sub: "Awaiting Action", color: "border-yellow-500" },
   ], [data.stats]);
 
+   const invoiceFilterFromUrl = useMemo(() => {
+      const params = new URLSearchParams(location.search);
+      return params.get('risk') || 'All';
+   }, [location.search]);
+
   return (
     <div className="flex h-screen overflow-hidden bg-dark relative antialiased group/root">
       <Sidebar role="seller" isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-[#0A2518]/40 backdrop-blur-sm z-30 md:hidden animate-fade-in" onClick={() => setMobileMenuOpen(false)} />
+      <div className="fixed inset-0 bg-text/40 backdrop-blur-sm z-30 md:hidden animate-fade-in" onClick={() => setMobileMenuOpen(false)} />
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
@@ -134,7 +180,7 @@ export default function SellerDashboard() {
             </div>
             
             <div className="flex items-center gap-3">
-               <button onClick={() => setShowCreateModal(true)} className="px-6 py-3 bg-[#0A2518] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#047857] transition-all shadow-xl shadow-[#0A2518]/10 flex items-center gap-2.5 active:scale-95">
+               <button onClick={() => setShowCreateModal(true)} className="px-6 py-3 bg-text text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#047857] transition-all shadow-xl shadow-text/10 flex items-center gap-2.5 active:scale-95">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
                   New Document
                </button>
@@ -172,7 +218,7 @@ export default function SellerDashboard() {
                      
                      {/* Analytical Layer (Revenue Flux + Compliance) */}
                      <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        <div className="lg:col-span-8 bg-white border border-border rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group h-[480px] flex flex-col">
+                        <div className="lg:col-span-8 bg-white border border-border rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group h-120 flex flex-col">
                            <div className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-[#047857]/10 to-transparent rounded-full translate-x-32 -translate-y-32 blur-3xl opacity-60" />
                            <div className="flex items-center justify-between mb-8 relative z-10 shrink-0">
                              <div>
@@ -188,7 +234,7 @@ export default function SellerDashboard() {
 
                         <div className="lg:col-span-4 bg-white border border-border rounded-[2.5rem] p-8 shadow-sm flex flex-col h-full">
                            <h3 className="text-[10px] font-black text-text uppercase tracking-[0.25em] mb-8 text-center">Settlement Status</h3>
-                           <div className="flex-1 w-full relative min-h-[220px]">
+                           <div className="flex-1 w-full relative min-h-55">
                               {statusDist.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                   <PieChart>
@@ -203,7 +249,7 @@ export default function SellerDashboard() {
                               )}
                               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                  <span className="text-2xl font-black text-text">{data.stats?.totalSent || 0}</span>
-                                 <span className="text-[9px] font-bold text-muted-2 uppercase tracking-widest leading-none leading-none">Aggregate Docs</span>
+                                 <span className="text-[9px] font-bold text-muted-2 uppercase tracking-widest leading-none">Aggregate Docs</span>
                               </div>
                            </div>
                         </div>
@@ -236,7 +282,7 @@ export default function SellerDashboard() {
                                 <div key={g.l} className="space-y-3.5">
                                    <div className="flex justify-between items-center">
                                       <div className="flex items-center gap-2">
-                                         <span className="w-1.5 h-1.5 rounded-full bg-[#E5E2D9]" />
+                                         <span className="w-1.5 h-1.5 rounded-full bg-border" />
                                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-2">{g.l}</span>
                                       </div>
                                       <span className="text-[11px] font-black text-text">Rs. {fmtCurrency(g.v)}</span>
@@ -251,7 +297,7 @@ export default function SellerDashboard() {
                      </div>
 
                      <div className="lg:col-span-6">
-                        <div className="bg-[#0A2518] rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group h-full">
+                        <div className="bg-text rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group h-full">
                            <div className="absolute inset-0 bg-linear-to-tr from-white/5 to-transparent pointer-events-none" />
                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-12 -translate-y-12 blur-3xl" />
                            <h3 className="text-[10px] font-black uppercase tracking-[0.25em] mb-8 relative z-10 flex items-center gap-3">
@@ -278,7 +324,14 @@ export default function SellerDashboard() {
 
                {tab === 'invoices' && (
                  <div className="bg-white border border-border rounded-[2.5rem] overflow-hidden shadow-sm">
-                    <InvoiceTable title="Exhaustive Sales Record" invoices={data.invoices} role="seller" onRowClick={setSelectedInvoice} onRefresh={fetchData} />
+                              <InvoiceTable
+                                 title="Exhaustive Sales Record"
+                                 invoices={data.invoices}
+                                 role="seller"
+                                 onRowClick={setSelectedInvoice}
+                                 onRefresh={fetchData}
+                                 initialFilter={invoiceFilterFromUrl}
+                              />
                  </div>
                )}
                {tab === 'requests' && (
@@ -294,12 +347,12 @@ export default function SellerDashboard() {
                      </div>
 
                      {data.requests.length === 0 ? (
-                        <div className="h-[400px] flex flex-col items-center justify-center text-center bg-white border border-border border-dashed rounded-[3rem]">
+                        <div className="h-100 flex flex-col items-center justify-center text-center bg-white border border-border border-dashed rounded-[3rem]">
                            <div className="w-20 h-20 rounded-full bg-surface-2 flex items-center justify-center mb-6 text-muted-2">
                               <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                            </div>
                            <h4 className="text-lg font-black text-text mb-2 uppercase tracking-wide">Neutral Flux</h4>
-                           <p className="text-[11px] text-[#A2A9A5] font-bold uppercase tracking-widest leading-relaxed max-w-[280px]">No inbound document requests detected at this time.</p>
+                           <p className="text-[11px] text-[#A2A9A5] font-bold uppercase tracking-widest leading-relaxed max-w-70">No inbound document requests detected at this time.</p>
                         </div>
                      ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
@@ -317,14 +370,14 @@ export default function SellerDashboard() {
                                     
                                     <div className="pt-6 border-t border-border/60 flex items-center justify-between">
                                        <div className="flex items-center gap-2">
-                                          <div className="w-1.5 h-1.5 rounded-full bg-[#E5E2D9]" />
+                                          <div className="w-1.5 h-1.5 rounded-full bg-border" />
                                           <span className="text-[9px] font-black text-muted-2 uppercase tracking-widest">Document Status</span>
                                        </div>
                                        <span className="text-[10px] font-black text-[#047857] uppercase tracking-tight">Pending Dispatch</span>
                                     </div>
                                  </div>
 
-                                 <button className="w-full mt-10 py-4 bg-[#0A2518] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#0A2518]/10 hover:bg-[#047857] transition-all relative z-10 active:scale-95">
+                                 <button className="w-full mt-10 py-4 bg-text text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-text/10 hover:bg-[#047857] transition-all relative z-10 active:scale-95">
                                     Submit Fulfillment
                                  </button>
                               </div>
@@ -340,7 +393,7 @@ export default function SellerDashboard() {
                            <h3 className="text-xl font-black text-text" style={{ fontFamily: 'Plus Jakarta Sans' }}>Receivables & Liquidity</h3>
                            <p className="text-[10px] font-bold text-[#A2A9A5] uppercase tracking-widest">Digital Asset & Fiat Accrual Ledger</p>
                         </div>
-                        <div className="px-5 py-3 bg-[#0A2518] text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#0A2518]/20">
+                        <div className="px-5 py-3 bg-text text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-text/20">
                            Total Accrued: Rs. {fmtCurrency(data.stats?.totalBilled || 0)}
                         </div>
                      </div>
@@ -362,7 +415,7 @@ export default function SellerDashboard() {
                      </div>
                   </div>
                )}
-               {tab === 'gst' && <AuditFeed />}
+               {tab === 'gst' && <GstReturnsPanel />}
                {tab === 'audit' && <AuditFeed />}
                {tab === 'settings' && <SettingsTab />}
             </div>

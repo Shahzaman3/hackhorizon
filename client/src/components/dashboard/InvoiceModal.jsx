@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StatusBadge from './StatusBadge';
 import BlockchainBadge from './BlockchainBadge';
 import api from '../../api/axios';
@@ -8,8 +8,35 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
   const [inlineAction, setInlineAction] = useState(null);
   const [actionNote, setActionNote] = useState('');
   const [error, setError] = useState('');
+  const [blockchainRecord, setBlockchainRecord] = useState(null);
 
   if (!invoice) return null;
+
+  useEffect(() => {
+    let cancelled = false;
+    const invId = invoice?._id || invoice?.id;
+
+    if (!invId) return undefined;
+
+    const fetchBlockchainRecord = async () => {
+      try {
+        const res = await api.get(`/invoices/${invId}/blockchain`);
+        if (!cancelled) {
+          setBlockchainRecord(res.data?.data || null);
+        }
+      } catch {
+        if (!cancelled) {
+          setBlockchainRecord(null);
+        }
+      }
+    };
+
+    fetchBlockchainRecord();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [invoice?._id, invoice?.id]);
 
   const totalTax = (invoice.tax?.cgst || 0) + (invoice.tax?.sgst || 0) + (invoice.tax?.igst || 0);
 
@@ -78,6 +105,19 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
     return '#ca8a04';
   };
 
+  const txHash = blockchainRecord?.txHash || invoice.blockchainTxHash || null;
+  const blockNumber = blockchainRecord?.blockNumber ?? invoice.blockchainBlockNumber ?? null;
+  const confirmedAt = blockchainRecord?.confirmedAt || invoice.blockchainConfirmedAt || null;
+  const blockchainStatus = blockchainRecord?.status || invoice.blockchainStatus;
+
+  const shortTxHash = txHash
+    ? `${txHash.slice(0, 10)}...${txHash.slice(-8)}`
+    : null;
+  const explorerBase = import.meta.env.VITE_BLOCK_EXPLORER_TX_BASE_URL;
+  const explorerLink = explorerBase && txHash
+    ? `${explorerBase.replace(/\/$/, '')}/${txHash}`
+    : null;
+
   return (
     <div className="fixed inset-0 bg-[#0A2518]/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
       <div className="bg-white border border-border rounded-[2.5rem] w-full max-w-xl flex flex-col max-h-[90vh] shadow-2xl animate-scale-in overflow-hidden">
@@ -91,7 +131,7 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <BlockchainBadge status={invoice.blockchainStatus} />
+            <BlockchainBadge status={blockchainStatus} />
             <StatusBadge status={invoice.status} />
             <button
               onClick={onClose}
@@ -120,6 +160,44 @@ export default function InvoiceModal({ invoice, onClose, role = 'seller', onRefr
                   <div className="text-sm font-mono font-black text-text uppercase tracking-wider relative z-10">{value}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Blockchain Record */}
+            <div className="bg-white border border-border rounded-[2rem] p-6 md:p-8 shadow-sm space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h4 className="text-[10px] font-black text-muted-2 uppercase tracking-[0.25em]">Blockchain Record</h4>
+                <BlockchainBadge status={blockchainStatus} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="rounded-2xl bg-surface-2/30 border border-border p-4">
+                  <p className="text-[10px] font-black text-muted-2 uppercase tracking-widest mb-1">Tx Hash</p>
+                  <p className="font-mono font-bold text-text break-all">{shortTxHash || 'Pending'}</p>
+                </div>
+                <div className="rounded-2xl bg-surface-2/30 border border-border p-4">
+                  <p className="text-[10px] font-black text-muted-2 uppercase tracking-widest mb-1">Block</p>
+                  <p className="font-bold text-text">{blockNumber ?? 'Pending'}</p>
+                </div>
+                <div className="rounded-2xl bg-surface-2/30 border border-border p-4">
+                  <p className="text-[10px] font-black text-muted-2 uppercase tracking-widest mb-1">Confirmed At</p>
+                  <p className="font-bold text-text">
+                    {confirmedAt
+                      ? new Date(confirmedAt).toLocaleString('en-GB')
+                      : 'Pending'}
+                  </p>
+                </div>
+              </div>
+
+              {explorerLink && (
+                <a
+                  href={explorerLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#047857] hover:opacity-70 transition-opacity"
+                >
+                  Open on Block Explorer
+                </a>
+              )}
             </div>
 
             {/* Financial Summary */}

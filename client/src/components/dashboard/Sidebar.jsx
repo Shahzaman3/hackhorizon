@@ -8,7 +8,7 @@ const sellerNav = [
   { label: "My Invoices",    icon: "file",    path: "/seller/invoices" },
   { label: "Upload Invoice", icon: "upload",  path: "/seller/upload" },
   { label: "Requests",       icon: "inbox",   path: "/seller/requests" },
-  { label: "GST Summary",    icon: "chart",   path: "/seller/gst" },
+  { label: "GST Returns",    icon: "chart",   path: "/seller/gst" },
   { label: "Payments",       icon: "rupee",   path: "/seller/payments" },
   { label: "Audit Log",      icon: "activity",path: "/seller/audit" },
   { label: "Settings",       icon: "settings",path: "/seller/settings" },
@@ -18,7 +18,7 @@ const buyerNav = [
   { label: "Overview",           icon: "grid",   path: "/buyer/overview" },
   { label: "Received Invoices",  icon: "file",   path: "/buyer/invoices" },
   { label: "Request Invoice",    icon: "inbox",  path: "/buyer/requests" },
-  { label: "GST Summary",        icon: "chart",  path: "/buyer/gst" },
+  { label: "GST Returns",        icon: "chart",  path: "/buyer/gst" },
   { label: "Audit Log",          icon: "activity",path: "/buyer/audit" },
   { label: "Settings",           icon: "settings",path: "/buyer/settings" },
 ];
