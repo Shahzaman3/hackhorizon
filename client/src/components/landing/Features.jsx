@@ -6,42 +6,42 @@ const tabs = [
     label: "Invoice Upload",
     heading: "Instantly create GST-ready invoices",
     desc: "Sellers can create and upload invoices instantly with all GST-required fields. Set buyer GSTIN, add tax breakdowns (CGST, SGST, IGST), and submit in seconds.",
-    videoPlaceholder: "Invoice Upload Demo",
+    image: "/invoiceupload.png",
   },
   {
     id: "validation",
     label: "Buyer Validation",
     heading: "One-click approval workflow",
     desc: "Buyers get a clean dashboard showing all received invoices. Accept, reject, or request modification with a single click. Every action is logged for full audit trail.",
-    videoPlaceholder: "Buyer Validation Demo",
+    image: "/buyervalidation.png",
   },
   {
     id: "tracking",
     label: "Status Tracking",
     heading: "Know exactly where your money is",
     desc: "Every invoice moves through a clear lifecycle: Pending → Accepted / Rejected / Modified. Color-coded badges make status instantly scannable.",
-    videoPlaceholder: "Status Tracking Demo",
+    image: "/statustracking.png",
   },
   {
     id: "gst",
     label: "GST Summary",
     heading: "Automated tax calculations",
     desc: "Auto-calculated GST dashboard showing CGST, SGST, and IGST breakdowns. Separate views for GST collected (seller) and GST payable (buyer).",
-    videoPlaceholder: "GST Summary Demo",
+    image: "/gstsummary.png",
   },
   {
     id: "payments",
     label: "Payment Tracking",
     heading: "Reconcile faster than ever",
     desc: "Sellers mark invoices as Paid or Unpaid with one click. Buyers see outstanding amounts at a glance. Dashboard tiles show pending amounts.",
-    videoPlaceholder: "Payment Tracking Demo",
+    image: "/payment.png",
   },
   {
     id: "requests",
     label: "Invoice Requests",
     heading: "Stop chasing over email",
     desc: "Buyers can request missing invoices directly from the platform. Sellers see all incoming requests in one place and can fulfil them instantly.",
-    videoPlaceholder: "Invoice Requests Demo",
+    image: "/request.png",
   }
 ];
 
@@ -183,18 +183,15 @@ const Features = () => {
               </div>
             </div>
             
-            {/* Video Placeholder Area */}
-            <div className="relative aspect-[16/10] flex flex-col items-center justify-center p-8 text-center text-[#0A2518] w-full h-full min-h-[300px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#047857]/5 via-transparent to-transparent" />
-              <div className="relative z-10 w-16 h-16 rounded-full bg-[#047857]/15 border border-[#047857]/30 flex items-center justify-center mb-4 cursor-pointer hover:bg-[#047857]/25 hover:scale-110 transition-all duration-300 shadow-lg shadow-[#047857]/10">
-                <svg className="w-6 h-6 text-[#047857] ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M4 4l12 6-12 6V4z" />
-                </svg>
-              </div>
-              <p className="relative z-10 text-[#4D6357] text-sm font-semibold" style={{ fontFamily: 'Plus Jakarta Sans' }}>
-                {current.videoPlaceholder}
-              </p>
-              <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(#047857 1px, transparent 1px), linear-gradient(90deg, #047857 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+            {/* Image Display Area */}
+            <div className="relative aspect-[16/10] w-full h-full overflow-hidden bg-[#FDFBF7] p-4 sm:p-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#047857]/5 via-transparent to-transparent z-10 pointer-events-none" />
+              <img 
+                src={current.image} 
+                alt={current.label} 
+                className="w-full h-full object-contain animate-fade-in transition-transform duration-700 hover:scale-[1.03]"
+              />
+              <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(0,0,0,0.02)] pointer-events-none z-20" />
             </div>
           </div>
 

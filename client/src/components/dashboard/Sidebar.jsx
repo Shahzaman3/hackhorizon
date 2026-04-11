@@ -88,7 +88,7 @@ export default function Sidebar({ role: overrideRole, isOpen, onClose }) {
           </button>
         )}
 
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate('/')}>
+        <div className="flex items-center gap-1.5 cursor-pointer group" onClick={() => navigate('/')}>
           <img src="/logo.png" alt="InvoiceSync logo" className="w-16 h-16 object-contain group-hover:scale-105 transition-transform" />
           <span className="text-[#0A2518] font-bold text-xl tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>InvoiceSync</span>
         </div>

@@ -27,12 +27,12 @@ export default function DashboardPreview() {
           </div>
 
           {/* Viewport */}
-          <div className="relative rounded-[1.25rem] overflow-hidden bg-[#0f1a12] aspect-video w-full flex items-center justify-center">
+          <div className="relative rounded-[1.25rem] overflow-hidden bg-[#FFFFFF] aspect-video w-full flex items-center justify-center p-3 md:p-5">
             {!imgError ? (
               <img
-                src="/dashboard-preview.png"
+                src="/dashboard.png"
                 alt="InvoiceSync Dashboard Screenshot"
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-700"
                 onError={() => setImgError(true)}
               />
             ) : (

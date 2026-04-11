@@ -32,7 +32,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between h-[70px] px-6 md:px-10">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+        <Link to="/" className="flex items-center gap-1.5 group flex-shrink-0">
           <img src="/logo.png" alt="InvoiceSync logo" className="w-14 h-14 object-contain" />
           <span className="text-[#0A2518] font-bold text-[17px] tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>
             InvoiceSync
