@@ -52,21 +52,21 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-dark relative overflow-hidden">
       {/* bg blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-15%] left-[-10%] w-[600px] h-[600px] bg-[#047857]/8 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-[#047857]/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[-15%] left-[-10%] w-105 h-105 bg-[#047857]/8 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-100 h-100 bg-[#047857]/5 rounded-full blur-[100px]" />
         <div className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'linear-gradient(#047857 1px, transparent 1px), linear-gradient(90deg, #047857 1px, transparent 1px)', backgroundSize: '48px 48px' }}
         />
       </div>
 
-      <div className="w-full max-w-[420px] relative z-10 flex flex-col items-center">
+      <div className="w-full max-w-105 relative z-10 flex flex-col items-center">
         {/* Logo */}
         <div className="flex items-center gap-2 mb-10">
           <img src="/logo.png" alt="InvoiceSync logo" className="w-16 h-16 object-contain" />
           <span className="text-text font-bold text-xl tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans' }}>InvoiceSync</span>
         </div>
 
-        <div className="w-full bg-surface/80 backdrop-blur-xl border border-border rounded-[2rem] p-8 shadow-2xl flex flex-col text-center">
+        <div className="w-full bg-surface/80 backdrop-blur-xl border border-border rounded-4xl p-8 shadow-2xl flex flex-col text-center">
           <button
             type="button"
             onClick={handleBack}
@@ -186,9 +186,9 @@ export default function Login() {
 
           {/* Divider */}
           <div className="my-7 flex items-center gap-4">
-            <div className="flex-1 h-px bg-[#E5E2D9]" />
+            <div className="flex-1 h-px bg-border" />
             <span className="text-xs text-muted-2 font-bold uppercase tracking-wider">or</span>
-            <div className="flex-1 h-px bg-[#E5E2D9]" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Google */}
